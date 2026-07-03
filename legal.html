@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legal Notice — BeastConverter</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0E14; --bg-elevated:#111823; --mist:#C9D3DE; --fog:#7C8B9C;
+    --emerald:#17C989; --amber:#F5A524;
+    --ff-display:'Space Grotesk',sans-serif; --ff-body:'Inter',sans-serif; --ff-mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--mist); font-family:var(--ff-body); line-height:1.65; }
+  .wrap{ max-width:760px; margin:0 auto; padding:60px 24px 100px; }
+  a{ color:var(--emerald); }
+  header a.back{ display:inline-flex; align-items:center; gap:6px; color:var(--fog); font-family:var(--ff-mono); font-size:.8rem; text-decoration:none; margin-bottom:36px; }
+  h1{ font-family:var(--ff-display); color:#fff; font-size:2.1rem; margin-bottom:6px; }
+  h2{ font-family:var(--ff-display); color:#fff; font-size:1.2rem; margin-top:40px; margin-bottom:10px; }
+  p, li{ font-size:.95rem; }
+  .callout{
+    background:var(--bg-elevated); border:1px solid rgba(245,165,36,.35); border-radius:12px;
+    padding:18px 20px; font-size:.86rem; margin:24px 0;
+  }
+  .callout b{ color:var(--amber); }
+  .placeholder{ background:rgba(76,141,255,.15); color:#4C8DFF; padding:1px 6px; border-radius:4px; font-family:var(--ff-mono); font-size:.85em; }
+  dl{ display:grid; grid-template-columns:200px 1fr; gap:10px 20px; margin:0; }
+  dt{ font-family:var(--ff-mono); font-size:.78rem; text-transform:uppercase; letter-spacing:.05em; color:var(--fog); padding-top:2px; }
+  dd{ margin:0; font-size:.95rem; }
+  @media(max-width:560px){ dl{ grid-template-columns:1fr; gap:2px; } dt{ margin-top:14px; } }
+  footer{ margin-top:60px; padding-top:20px; border-top:1px solid rgba(255,255,255,.08); font-size:.78rem; color:var(--fog); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="back" href="beastconverter.html">&larr; Back to BeastConverter</a>
+    <h1>Legal Notice</h1>
+  </header>
+
+  <div class="callout">
+    <b>Note:</b> the trader details below are Make Sense ApS's registered information. If this ever
+    changes (new address, different responsible entity, etc.), update this page immediately —
+    keeping it current is a standalone legal obligation, not a one-time task.
+  </div>
+
+  <h2>Service provider</h2>
+  <dl>
+    <dt>Company</dt>
+    <dd>Make Sense ApS</dd>
+    <dt>CVR number</dt>
+    <dd>34352941</dd>
+    <dt>Registered address</dt>
+    <dd>Blangstedaardsvej 1, 5220 Odense, Denmark</dd>
+    <dt>Email</dt>
+    <dd><a href="mailto:contact@beastconverter.com">contact@beastconverter.com</a></dd>
+    <dt>VAT number</dt>
+    <dd>DK34352941</dd>
+  </dl>
+
+  <h2>Supervisory and registration information</h2>
+  <p>
+    The company is registered with the Danish Business Authority (Erhvervsstyrelsen). Company
+    information can be verified in the Central Business Register at
+    <a href="https://datacvr.virk.dk" target="_blank" rel="noopener">datacvr.virk.dk</a>.
+  </p>
+
+  <h2>Responsibility for content</h2>
+  <p>
+    We take care to keep the information on this site accurate and current, but we cannot guarantee
+    completeness or accuracy of all content at all times. External links lead to third-party sites
+    whose content we do not control and for which we accept no responsibility.
+  </p>
+
+  <h2>Consumer disputes</h2>
+  <p>
+    For complaints and dispute resolution routes, see §11 of our
+    <a href="terms.html">Terms of Use</a>.
+  </p>
+
+  <footer>
+    &copy; <span id="y"></span> BeastConverter.com — <a href="privacy.html">Privacy policy</a> · <a href="terms.html">Terms of use</a>
+  </footer>
+</div>
+<script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+</body>
+</html>
