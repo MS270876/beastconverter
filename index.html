@@ -2377,9 +2377,35 @@ async function runConversion(){
     console.error('Conversion failed:', err);
     queuedFiles.forEach(f=> f.status = 'error');
     renderFileList();
-    alert('Something went wrong during conversion. Check the console for details.');
+    alert(explainConversionError(err, selectedTool));
   }
   refreshConvertButtonState();
+}
+
+/* Translates known library error signatures into a message that tells
+   the person what to actually do, instead of a raw stack trace. These
+   patterns come from real errors seen in testing:
+   - mammoth throws a JSZip "end of central directory" error when the
+     file isn't a real .docx (a .docx IS a zip archive internally — an
+     old .doc, or a mismatched file, will fail exactly like this).
+   - pdf.js throws InvalidPDFException for anything that isn't a
+     structurally valid, uncorrupted PDF.
+   - heic2any explicitly refuses files that are already a browser-
+     readable format (e.g. a .jpg someone tried to run through the
+     HEIC converter). */
+function explainConversionError(err, toolId){
+  const msg = String(err && err.message || err);
+
+  if(/central directory|is this a zip file/i.test(msg)){
+    return "That file doesn't look like a valid .docx — Word to PDF needs a modern Word document (2007 or later). If you have an older .doc file, open it in Word and re-save it as .docx first.";
+  }
+  if(err && err.name === 'InvalidPDFException'){
+    return "That file doesn't look like a valid, readable PDF. It may be corrupted, or not actually a PDF — try a different file.";
+  }
+  if(/already browser readable/i.test(msg)){
+    return "That file is already in a standard format (like JPEG) — HEIC to JPG only works on actual .heic files, typically straight from an iPhone.";
+  }
+  return 'Something went wrong during conversion. Check the console for details.';
 }
 
 function renderResults(results){
