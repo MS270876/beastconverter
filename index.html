@@ -98,7 +98,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js"></script>
 <!-- New for this update: PDF to Word, Word to PDF, PDF to Text, Compress PDF -->
-<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js"></script>
+<!-- NOTE: docx (used for PDF-to-Word) is loaded via dynamic import() inside
+     pdf2word() instead of a <script> tag here — see that function for why. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth.js/1.6.0/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <!-- Stripe.js — required for redirectToCheckout(). This is Stripe's own
@@ -2196,7 +2197,13 @@ const Converters = {
      empty document since there's no OCR step in this tool. */
   async pdf2word(files){
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    const { Document, Packer, Paragraph, TextRun } = docx;
+    // docx is an ES module — loaded here via dynamic import() rather than a
+    // <script> tag, because a plain script tag doesn't reliably expose a
+    // window.docx global for this package (it's built for `import` usage,
+    // not old-style UMD globals). This fetches it once per conversion; the
+    // browser caches the module after the first successful import.
+    const docxLib = await import('https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js');
+    const { Document, Packer, Paragraph, TextRun } = docxLib;
     const results = [];
     for(const {file} of files){
       const data = new Uint8Array(await file.arrayBuffer());
