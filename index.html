@@ -37,14 +37,29 @@
 <meta property="og:title" content="BeastConverter: Free, Private PDF to Word & File Converter">
 <meta property="og:description" content="Convert PDF to Word, compress PDF, and more — 100% in your browser. Files are never uploaded to a server.">
 <meta property="og:locale" content="en_US">
-<!-- og:image intentionally omitted — add a real 1200x630 social
-     preview image before launch; a missing/broken og:image is worse
-     than none, and a placeholder here would just be a broken link. -->
+<!-- ============================================================
+     REQUIRED ACTION BEFORE THIS TAG DOES ANYTHING:
+     This points at an image that does NOT exist yet. You (or a
+     design pass) need to create a real 1200×630px PNG or JPG and
+     upload it to this exact path in the website repo, alongside
+     index.html. Until that file exists at this URL, most platforms
+     will show a broken or blank image in share previews — which
+     is why this was left out entirely in the previous version.
+     Once the file exists, this tag needs no other changes.
+     Suggested content: dark background matching the site theme,
+     the BeastConverter wordmark + claw-mark logo, and a short
+     tagline like "Free. Private. 100% in your browser."
+     ============================================================ -->
+<meta property="og:image" content="https://beastconverter.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BeastConverter — free, private file conversion in your browser">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="BeastConverter: Free, Private PDF to Word & File Converter">
 <meta name="twitter:description" content="Convert PDF to Word, compress PDF, and more — 100% in your browser. Files never touch a server.">
+<meta name="twitter:image" content="https://beastconverter.com/og-image.png">
 
 <!-- ============================================================
      JSON-LD structured data (schema.org/WebApplication).
@@ -396,6 +411,18 @@ h1 em{ font-style:normal; color:var(--emerald); }
 [dir="rtl"] .popular-ribbon{ left:auto; right:16px; }
 
 /* ================= CONVERT ACTION BAR ================= */
+/* ================= RESIZE OPTIONS ================= */
+.resize-options{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  background:var(--bg-elevated); border:var(--border-hair); border-radius:var(--radius-md);
+  padding:14px 18px; margin-top:18px; font-family:var(--ff-mono); font-size:.86rem; color:var(--mist);
+}
+.resize-options input[type="number"]{
+  width:100px; padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,.18);
+  background:var(--bg-inset); color:#fff; font-family:var(--ff-mono); font-size:.9rem;
+}
+.resize-options .resize-hint{ color:var(--fog); font-size:.78rem; }
+
 .convert-bar{
   position:sticky; bottom:0; z-index:40; margin-top:30px;
   background:var(--bg-elevated); border:var(--border-hair); border-radius:var(--radius-md);
@@ -613,7 +640,7 @@ footer{ border-top:var(--border-hair); margin-top:60px; padding:40px 0 24px; }
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12V17C4 18.6569 5.34315 20 7 20H17C18.6569 20 20 18.6569 20 17V12" stroke="#06231A" stroke-width="2" stroke-linecap="round"/><path d="M12 4V15M12 4L8 8M12 4L16 8" stroke="#06231A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             <span data-i18n="drop_browse">Browse files</span>
           </label>
-          <input type="file" id="file-input" multiple accept=".png,.jpg,.jpeg,.webp,.heic,.heif,.pdf,.csv,.docx">
+          <input type="file" id="file-input" multiple accept=".png,.jpg,.jpeg,.webp,.heic,.heif,.pdf,.csv,.docx,.xlsx">
           <div class="drop-formats" data-i18n="drop_formats">HEIC · PNG · JPG · WEBP · PDF · CSV — max 50MB per file</div>
 
           <div class="file-list" id="file-list"></div>
@@ -629,6 +656,30 @@ footer{ border-top:var(--border-hair); margin-top:60px; padding:40px 0 24px; }
 
         <div class="tool-grid" id="tool-grid">
           <!-- Tool cards are rendered by JS from the TOOLS config so labels stay in sync with i18n -->
+        </div>
+
+        <!-- ================= RESIZE OPTIONS ================= -->
+        <!-- Only Resize Image needs a parameter from the person — every
+             other tool just needs a file. Hidden by default; toggled by
+             selectTool() when 'resizeimage' is (de)selected. A single
+             width field (not width+height) is deliberate: with multiple
+             queued files of different original sizes, one target width
+             with auto-computed proportional height is far more usable
+             than asking for exact width+height per batch. -->
+        <div class="resize-options" id="resize-options" style="display:none;">
+          <label for="resize-width-input" data-i18n="resize_width_label">Target width</label>
+          <input type="number" id="resize-width-input" value="1024" min="16" max="8000" step="1">
+          <span class="resize-hint" data-i18n="resize_width_hint">px — height scales automatically to match</span>
+        </div>
+
+        <!-- ================= ROTATE OPTIONS ================= -->
+        <div class="resize-options" id="rotate-options" style="display:none;">
+          <label for="rotate-angle-select" data-i18n="rotate_angle_label">Rotation</label>
+          <select id="rotate-angle-select" class="lang-select" style="padding:8px 30px 8px 12px;">
+            <option value="90" data-i18n="rotate_option_90">Rotate 90° clockwise</option>
+            <option value="180" data-i18n="rotate_option_180">Rotate 180°</option>
+            <option value="270" data-i18n="rotate_option_270">Rotate 90° counter-clockwise</option>
+          </select>
         </div>
 
         <div class="convert-bar">
@@ -805,6 +856,51 @@ footer{ border-top:var(--border-hair); margin-top:60px; padding:40px 0 24px; }
   </div>
 </div>
 
+<!-- ============================================================
+     REWARDED VIDEO MODAL
+     Replaces a bare alert() with a real three-step UX shell:
+     confirm → (simulated) playing → success. NOT wired to a real ad
+     network yet — see the honest explanation in watchRewardedVideoPlaceholder()
+     in the script below for exactly what has to happen before this
+     can go live for real users.
+     ============================================================ -->
+<div class="modal-overlay" id="rewarded-video-modal">
+  <div class="modal-card">
+
+    <div id="rv-step-confirm">
+      <div class="mi" style="background:rgba(76,141,255,.12);">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5V19L19 12L8 5Z" fill="#4C8DFF"/></svg>
+      </div>
+      <h3 data-i18n="rv_confirm_title">Watch a quick ad?</h3>
+      <p data-i18n="rv_confirm_body">A 30-second video ad gets you 3 fresh free conversions, right now.</p>
+      <div class="modal-actions">
+        <button class="modal-btn primary" id="rv-watch-btn" data-i18n="rv_confirm_watch">Watch ad</button>
+        <button class="modal-btn secondary" id="rv-cancel-btn" data-i18n="rv_confirm_cancel">Not now</button>
+      </div>
+    </div>
+
+    <div id="rv-step-playing" style="display:none;">
+      <div class="mi" style="background:rgba(76,141,255,.12);">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="animation:notch-pulse 1.2s ease-in-out infinite;"><path d="M8 5V19L19 12L8 5Z" fill="#4C8DFF"/></svg>
+      </div>
+      <h3 data-i18n="rv_playing_title">Ad playing…</h3>
+      <p data-i18n="rv_playing_body">(Simulated for testing — a real ad network will show its own player here.)</p>
+    </div>
+
+    <div id="rv-step-success" style="display:none;">
+      <div class="mi" style="background:rgba(23,201,137,.12);">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13L9 17L19 7" stroke="#17C989" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h3 data-i18n="rv_success_title">Reward granted!</h3>
+      <p data-i18n="rv_success_body">You've got 3 fresh free conversions.</p>
+      <div class="modal-actions">
+        <button class="modal-btn primary" id="rv-continue-btn" data-i18n="rv_success_continue">Continue</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- ================= ADBLOCK SOFT-WALL MODAL ================= -->
 <div class="modal-overlay" id="adblock-modal">
   <div class="modal-card">
@@ -894,7 +990,7 @@ const I18N = {
     pw_countdown_label:'until your free conversions reset',
     pw_video:'Watch a 30s video to convert instantly for free', pw_video_sub:'Rewarded video · no account needed',
     pw_pass:'Unlock instantly with a 24-Hour Beast Pass — 7 DKK / 1 EUR', pw_pass_sub:'Unlimited conversions · secured by Stripe',
-    pw_value_compare_title:'Why a Beast Pass?', pw_value_compare_body:'Other online tools charge 70+ DKK/month. BeastConverter gives you 24 hours of premium local power for just 7 DKK. No subscriptions. No hidden traps. 100% SSL secure via Stripe.',
+    pw_value_compare_title:'Why a Beast Pass?', pw_value_compare_body:'Other online tools charge 70+ DKK/month. BeastConverter gives you 24 hours of premium local power for just 7 DKK. No subscriptions. No hidden traps. 100% SSL secure via Stripe. Ads stay on — that\'s how we keep it this cheap.',
     ab_title:'We noticed an ad blocker',
     ab_sub:"We get it, ads can be annoying. But unlike other converters, BeastConverter runs 100% in your browser. We don't harvest your data, and we don't use expensive cloud servers. We just need ads to keep the beast alive. Please whitelist us to continue for free, watch a quick rewarded video, or grab a 7 DKK pass.",
     ab_video:'Watch a quick video instead',
@@ -922,6 +1018,15 @@ const I18N = {
     t_word2pdf_name:'Word to PDF', t_word2pdf_desc:'Turn a .docx into a shareable, print-ready PDF.',
     t_pdf2text_name:'PDF to Text', t_pdf2text_desc:'Pull the plain text out of a PDF as a .txt file.',
     badge_popular:'Most popular',
+    t_resizeimage_name:'Resize Image', t_resizeimage_desc:'Scale an image down (or up) to an exact width, right in your browser.',
+    resize_width_label:'Target width', resize_width_hint:'px — height scales automatically to match',
+    t_rotatepdf_name:'Rotate PDF', t_rotatepdf_desc:'Fix sideways pages — rotate every page in a PDF at once.',
+    t_excel2csv_name:'Excel to CSV', t_excel2csv_desc:'Turn an .xlsx spreadsheet into a plain .csv file.',
+    rotate_angle_label:'Rotation', rotate_option_90:'Rotate 90° clockwise', rotate_option_180:'Rotate 180°', rotate_option_270:'Rotate 90° counter-clockwise',
+    rv_confirm_title:'Watch a quick ad?', rv_confirm_body:'A 30-second video ad gets you 3 fresh free conversions, right now.',
+    rv_confirm_watch:'Watch ad', rv_confirm_cancel:'Not now',
+    rv_playing_title:'Ad playing…', rv_playing_body:'(Simulated for testing — a real ad network will show its own player here.)',
+    rv_success_title:'Reward granted!', rv_success_body:"You've got 3 fresh free conversions.", rv_success_continue:'Continue',
   },
   da: { dir:'ltr', name:'Dansk',
     seo:{ title:'BeastConverter – Gratis PDF til Word, 100% Privat', description:'Konverter PDF til Word, komprimer PDF og mere — 100% i din browser. Filer uploades aldrig til en server. Gratis og sikker filkonvertering.' },
@@ -945,7 +1050,7 @@ const I18N = {
     pw_countdown_label:'til dine gratis konverteringer nulstilles',
     pw_video:'Se en 30 sekunders video for at konvertere med det samme, gratis', pw_video_sub:'Belønningsvideo · intet login krævet',
     pw_pass:'Lås op med det samme med en 24-timers Beast Pass — 7 DKK / 1 EUR', pw_pass_sub:'Ubegrænsede konverteringer · sikret af Stripe',
-    pw_value_compare_title:'Hvorfor en Beast Pass?', pw_value_compare_body:'Andre online værktøjer koster 70+ DKK/måned. BeastConverter giver dig 24 timers premium lokal kraft for kun 7 DKK. Intet abonnement. Ingen skjulte fælder. 100% SSL-sikret via Stripe.',
+    pw_value_compare_title:'Hvorfor en Beast Pass?', pw_value_compare_body:'Andre online værktøjer koster 70+ DKK/måned. BeastConverter giver dig 24 timers premium lokal kraft for kun 7 DKK. Intet abonnement. Ingen skjulte fælder. 100% SSL-sikret via Stripe. Reklamer forbliver — det er sådan, vi holder prisen så lav.',
     ab_title:'Vi opdagede en annonceblokering',
     ab_sub:'Vi forstår godt, at annoncer kan være irriterende. Men i modsætning til andre konverteringsværktøjer kører BeastConverter 100% i din browser. Vi høster ikke dine data, og vi bruger ikke dyre cloud-servere. Vi har bare brug for annoncer for at holde udyret i live. Whitelist os for at fortsætte gratis, se en kort belønningsvideo, eller få en 7 DKK pas.',
     ab_video:'Se en kort video i stedet',
@@ -973,6 +1078,15 @@ const I18N = {
     t_word2pdf_name:'Word til PDF', t_word2pdf_desc:'Omdan en .docx-fil til en delbar, udskriftsklar PDF.',
     t_pdf2text_name:'PDF til tekst', t_pdf2text_desc:'Træk almindelig tekst ud af en PDF som en .txt-fil.',
     badge_popular:'Mest populær',
+    t_resizeimage_name:'Skaler billede', t_resizeimage_desc:'Skaler et billede op eller ned til en præcis bredde, direkte i din browser.',
+    resize_width_label:'Ønsket bredde', resize_width_hint:'px — højden skaleres automatisk med',
+    t_rotatepdf_name:'Rotér PDF', t_rotatepdf_desc:'Ret sidevendte sider — rotér alle sider i en PDF på én gang.',
+    t_excel2csv_name:'Excel til CSV', t_excel2csv_desc:'Omdan et .xlsx-regneark til en almindelig .csv-fil.',
+    rotate_angle_label:'Rotation', rotate_option_90:'Rotér 90° med uret', rotate_option_180:'Rotér 180°', rotate_option_270:'Rotér 90° mod uret',
+    rv_confirm_title:'Se en kort reklame?', rv_confirm_body:'En 30 sekunders videoreklame giver dig 3 friske gratis konverteringer, med det samme.',
+    rv_confirm_watch:'Se reklame', rv_confirm_cancel:'Ikke nu',
+    rv_playing_title:'Reklame afspilles…', rv_playing_body:'(Simuleret til test — et rigtigt annoncenetværk vil vise sin egen afspiller her.)',
+    rv_success_title:'Belønning givet!', rv_success_body:'Du har fået 3 friske gratis konverteringer.', rv_success_continue:'Fortsæt',
   },
   es: { dir:'ltr', name:'Español',
     seo:{ title:'BeastConverter: PDF a Word Gratis y Privado', description:'Convierte PDF a Word, comprime PDF y más — 100% en tu navegador. Los archivos nunca se suben a un servidor. Conversión gratuita y segura.' },
@@ -996,7 +1110,7 @@ const I18N = {
     pw_countdown_label:'hasta que se reinicien tus conversiones gratis',
     pw_video:'Ver un vídeo de 30s para convertir al instante, gratis', pw_video_sub:'Vídeo con recompensa · sin necesidad de cuenta',
     pw_pass:'Desbloquea al instante con un Beast Pass de 24 horas — 7 DKK / 1 EUR', pw_pass_sub:'Conversiones ilimitadas · protegido por Stripe',
-    pw_value_compare_title:'¿Por qué un Beast Pass?', pw_value_compare_body:'Otras herramientas online cobran 70+ DKK/mes. BeastConverter te da 24 horas de potencia local premium por solo 7 DKK. Sin suscripciones. Sin trampas ocultas. 100% seguro con SSL vía Stripe.',
+    pw_value_compare_title:'¿Por qué un Beast Pass?', pw_value_compare_body:'Otras herramientas online cobran 70+ DKK/mes. BeastConverter te da 24 horas de potencia local premium por solo 7 DKK. Sin suscripciones. Sin trampas ocultas. 100% seguro con SSL vía Stripe. Los anuncios se mantienen — así podemos ofrecer un precio tan bajo.',
     ab_title:'Detectamos un bloqueador de anuncios',
     ab_sub:'Lo entendemos, los anuncios pueden ser molestos. Pero a diferencia de otros conversores, BeastConverter funciona 100% en tu navegador. No recopilamos tus datos ni usamos costosos servidores en la nube. Solo necesitamos anuncios para mantener viva a la bestia. Añádenos a la lista blanca para continuar gratis, mira un vídeo con recompensa, o consigue un pase por 7 DKK.',
     ab_video:'Ver un vídeo en su lugar',
@@ -1020,6 +1134,15 @@ const I18N = {
     t_word2pdf_name:'Word a PDF', t_word2pdf_desc:'Convierte un .docx en un PDF listo para compartir e imprimir.',
     t_pdf2text_name:'PDF a texto', t_pdf2text_desc:'Extrae el texto plano de un PDF como archivo .txt.',
     badge_popular:'Más popular',
+    t_resizeimage_name:'Redimensionar imagen', t_resizeimage_desc:'Escala una imagen a un ancho exacto, directamente en tu navegador.',
+    resize_width_label:'Ancho deseado', resize_width_hint:'px — la altura se ajusta automáticamente',
+    t_rotatepdf_name:'Girar PDF', t_rotatepdf_desc:'Corrige páginas torcidas — gira todas las páginas de un PDF a la vez.',
+    t_excel2csv_name:'Excel a CSV', t_excel2csv_desc:'Convierte una hoja de cálculo .xlsx en un archivo .csv simple.',
+    rotate_angle_label:'Rotación', rotate_option_90:'Girar 90° en sentido horario', rotate_option_180:'Girar 180°', rotate_option_270:'Girar 90° en sentido antihorario',
+    rv_confirm_title:'¿Ver un anuncio rápido?', rv_confirm_body:'Un anuncio de vídeo de 30 segundos te da 3 conversiones gratis nuevas, ahora mismo.',
+    rv_confirm_watch:'Ver anuncio', rv_confirm_cancel:'Ahora no',
+    rv_playing_title:'Reproduciendo anuncio…', rv_playing_body:'(Simulado para pruebas — una red publicitaria real mostrará su propio reproductor aquí.)',
+    rv_success_title:'¡Recompensa obtenida!', rv_success_body:'Ya tienes 3 conversiones gratis nuevas.', rv_success_continue:'Continuar',
   },
   de: { dir:'ltr', name:'Deutsch',
     seo:{ title:'BeastConverter: Kostenlos PDF zu Word, 100% Privat', description:'PDF zu Word konvertieren, PDF komprimieren und mehr — 100% im Browser. Dateien werden nie hochgeladen. Kostenlose, sichere Dateikonvertierung.' },
@@ -1043,7 +1166,7 @@ const I18N = {
     pw_countdown_label:'bis Ihre kostenlosen Umwandlungen zurückgesetzt werden',
     pw_video:'Ein 30-Sekunden-Video ansehen und sofort kostenlos konvertieren', pw_video_sub:'Belohnungsvideo · kein Konto nötig',
     pw_pass:'Sofort freischalten mit einem 24-Stunden Beast Pass — 7 DKK / 1 EUR', pw_pass_sub:'Unbegrenzte Umwandlungen · gesichert von Stripe',
-    pw_value_compare_title:'Warum ein Beast Pass?', pw_value_compare_body:'Andere Online-Tools kosten 70+ DKK/Monat. BeastConverter gibt Ihnen 24 Stunden lokale Premium-Power für nur 7 DKK. Kein Abo. Keine versteckten Fallen. 100% SSL-gesichert über Stripe.',
+    pw_value_compare_title:'Warum ein Beast Pass?', pw_value_compare_body:'Andere Online-Tools kosten 70+ DKK/Monat. BeastConverter gibt Ihnen 24 Stunden lokale Premium-Power für nur 7 DKK. Kein Abo. Keine versteckten Fallen. 100% SSL-gesichert über Stripe. Werbung bleibt bestehen — so können wir den Preis so niedrig halten.',
     ab_title:'Wir haben einen Werbeblocker erkannt',
     ab_sub:'Wir verstehen es, Werbung kann nervig sein. Aber im Gegensatz zu anderen Konvertern läuft BeastConverter 100% in Ihrem Browser. Wir sammeln keine Daten und nutzen keine teuren Cloud-Server. Wir brauchen nur Werbung, um das Biest am Leben zu halten. Setzen Sie uns auf die Whitelist, um kostenlos fortzufahren, sehen Sie sich ein kurzes Belohnungsvideo an, oder holen Sie sich einen 7-DKK-Pass.',
     ab_video:'Stattdessen ein kurzes Video ansehen',
@@ -1067,6 +1190,15 @@ const I18N = {
     t_word2pdf_name:'Word zu PDF', t_word2pdf_desc:'Wandelt eine .docx-Datei in eine teilbare, druckfertige PDF um.',
     t_pdf2text_name:'PDF zu Text', t_pdf2text_desc:'Extrahiert den reinen Text aus einer PDF als .txt-Datei.',
     badge_popular:'Am beliebtesten',
+    t_resizeimage_name:'Bild skalieren', t_resizeimage_desc:'Skalieren Sie ein Bild auf eine exakte Breite, direkt in Ihrem Browser.',
+    resize_width_label:'Zielbreite', resize_width_hint:'px — die Höhe wird automatisch angepasst',
+    t_rotatepdf_name:'PDF drehen', t_rotatepdf_desc:'Seitenverkehrte Seiten korrigieren — alle Seiten einer PDF auf einmal drehen.',
+    t_excel2csv_name:'Excel zu CSV', t_excel2csv_desc:'Wandelt eine .xlsx-Tabelle in eine einfache .csv-Datei um.',
+    rotate_angle_label:'Drehung', rotate_option_90:'90° im Uhrzeigersinn drehen', rotate_option_180:'180° drehen', rotate_option_270:'90° gegen den Uhrzeigersinn drehen',
+    rv_confirm_title:'Kurze Werbung ansehen?', rv_confirm_body:'Ein 30-Sekunden-Videowerbespot gibt Ihnen sofort 3 neue kostenlose Umwandlungen.',
+    rv_confirm_watch:'Werbung ansehen', rv_confirm_cancel:'Jetzt nicht',
+    rv_playing_title:'Werbung läuft…', rv_playing_body:'(Simuliert zu Testzwecken — ein echtes Werbenetzwerk zeigt hier seinen eigenen Player.)',
+    rv_success_title:'Belohnung erhalten!', rv_success_body:'Sie haben 3 neue kostenlose Umwandlungen.', rv_success_continue:'Weiter',
   },
   fr: { dir:'ltr', name:'Français',
     seo:{ title:'BeastConverter : PDF vers Word Gratuit et Privé', description:'Convertissez PDF en Word, compressez un PDF et plus — 100% dans votre navigateur. Fichiers jamais envoyés à un serveur. Conversion gratuite et sécurisée.' },
@@ -1090,7 +1222,7 @@ const I18N = {
     pw_countdown_label:'avant la réinitialisation de vos conversions gratuites',
     pw_video:'Regarder une vidéo de 30s pour convertir instantanément, gratuitement', pw_video_sub:'Vidéo récompensée · aucun compte requis',
     pw_pass:'Débloquez instantanément avec un Beast Pass 24h — 7 DKK / 1 EUR', pw_pass_sub:'Conversions illimitées · sécurisé par Stripe',
-    pw_value_compare_title:'Pourquoi un Beast Pass ?', pw_value_compare_body:"D'autres outils en ligne facturent 70+ DKK/mois. BeastConverter vous offre 24h de puissance locale premium pour seulement 7 DKK. Aucun abonnement. Aucun piège caché. 100% sécurisé SSL via Stripe.",
+    pw_value_compare_title:'Pourquoi un Beast Pass ?', pw_value_compare_body:"D'autres outils en ligne facturent 70+ DKK/mois. BeastConverter vous offre 24h de puissance locale premium pour seulement 7 DKK. Aucun abonnement. Aucun piège caché. 100% sécurisé SSL via Stripe. Les publicités restent — c'est ce qui nous permet de garder un prix aussi bas.",
     ab_title:'Nous avons détecté un bloqueur de publicités',
     ab_sub:"On comprend, la publicité peut être agaçante. Mais contrairement aux autres convertisseurs, BeastConverter fonctionne à 100% dans votre navigateur. Nous ne collectons pas vos données et n'utilisons pas de serveurs cloud coûteux. Nous avons juste besoin de publicité pour garder la bête en vie. Ajoutez-nous à votre liste blanche pour continuer gratuitement, regardez une courte vidéo récompensée, ou obtenez un pass à 7 DKK.",
     ab_video:'Regarder une vidéo à la place',
@@ -1114,6 +1246,15 @@ const I18N = {
     t_word2pdf_name:'Word vers PDF', t_word2pdf_desc:'Transforme un .docx en PDF partageable et prêt à imprimer.',
     t_pdf2text_name:'PDF vers texte', t_pdf2text_desc:'Extrait le texte brut d\'un PDF sous forme de fichier .txt.',
     badge_popular:'Le plus populaire',
+    t_resizeimage_name:"Redimensionner l'image", t_resizeimage_desc:"Redimensionnez une image à une largeur précise, directement dans votre navigateur.",
+    resize_width_label:'Largeur cible', resize_width_hint:"px — la hauteur s'ajuste automatiquement",
+    t_rotatepdf_name:'Pivoter PDF', t_rotatepdf_desc:"Corrigez les pages de travers — pivotez toutes les pages d'un PDF en une fois.",
+    t_excel2csv_name:'Excel vers CSV', t_excel2csv_desc:'Transforme une feuille .xlsx en simple fichier .csv.',
+    rotate_angle_label:'Rotation', rotate_option_90:'Pivoter à 90° dans le sens horaire', rotate_option_180:'Pivoter à 180°', rotate_option_270:'Pivoter à 90° dans le sens antihoraire',
+    rv_confirm_title:'Regarder une courte pub ?', rv_confirm_body:'Une publicité vidéo de 30 secondes vous donne 3 nouvelles conversions gratuites, tout de suite.',
+    rv_confirm_watch:'Regarder la pub', rv_confirm_cancel:'Pas maintenant',
+    rv_playing_title:'Publicité en cours…', rv_playing_body:'(Simulé pour les tests — un vrai réseau publicitaire affichera son propre lecteur ici.)',
+    rv_success_title:'Récompense obtenue !', rv_success_body:'Vous avez 3 nouvelles conversions gratuites.', rv_success_continue:'Continuer',
   },
   hi: { dir:'ltr', name:'हिन्दी',
     seo:{ title:'BeastConverter: मुफ़्त PDF से Word, 100% निजी', description:'PDF को Word में बदलें, PDF कंप्रेस करें और भी बहुत कुछ — पूरी तरह आपके ब्राउज़र में। फ़ाइलें कभी सर्वर पर अपलोड नहीं होतीं। मुफ़्त और सुरक्षित।' },
@@ -1137,7 +1278,7 @@ const I18N = {
     pw_countdown_label:'आपके मुफ़्त कन्वर्ज़न रीसेट होने तक',
     pw_video:'मुफ़्त में तुरंत कन्वर्ट करने के लिए 30 सेकंड का वीडियो देखें', pw_video_sub:'रिवॉर्डेड वीडियो · अकाउंट की ज़रूरत नहीं',
     pw_pass:'24 घंटे के बीस्ट पास से तुरंत अनलॉक करें — 7 DKK / 1 EUR', pw_pass_sub:'असीमित कन्वर्ज़न · Stripe से सुरक्षित',
-    pw_value_compare_title:'बीस्ट पास क्यों?', pw_value_compare_body:'अन्य ऑनलाइन टूल्स 70+ DKK/माह लेते हैं। BeastConverter आपको सिर्फ़ 7 DKK में 24 घंटे की प्रीमियम लोकल पावर देता है। कोई सब्सक्रिप्शन नहीं। कोई छिपा जाल नहीं। Stripe के ज़रिए 100% SSL सुरक्षित।',
+    pw_value_compare_title:'बीस्ट पास क्यों?', pw_value_compare_body:'अन्य ऑनलाइन टूल्स 70+ DKK/माह लेते हैं। BeastConverter आपको सिर्फ़ 7 DKK में 24 घंटे की प्रीमियम लोकल पावर देता है। कोई सब्सक्रिप्शन नहीं। कोई छिपा जाल नहीं। Stripe के ज़रिए 100% SSL सुरक्षित। विज्ञापन बने रहते हैं — इसी वजह से हम इतनी कम कीमत रख पाते हैं।',
     ab_title:'हमें एक ऐड ब्लॉकर मिला',
     ab_sub:'हम समझते हैं, विज्ञापन परेशान कर सकते हैं। लेकिन अन्य कन्वर्टर्स के विपरीत, BeastConverter पूरी तरह आपके ब्राउज़र में चलता है। हम आपका डेटा नहीं जुटाते, और महंगे क्लाउड सर्वर इस्तेमाल नहीं करते। बीस्ट को ज़िंदा रखने के लिए बस विज्ञापनों की ज़रूरत है। मुफ़्त जारी रखने के लिए हमें व्हाइटलिस्ट करें, एक छोटा रिवॉर्डेड वीडियो देखें, या 7 DKK में पास लें।',
     ab_video:'इसके बजाय एक वीडियो देखें',
@@ -1161,6 +1302,15 @@ const I18N = {
     t_word2pdf_name:'Word से PDF', t_word2pdf_desc:'.docx को शेयर करने योग्य, प्रिंट-रेडी PDF में बदलें।',
     t_pdf2text_name:'PDF से टेक्स्ट', t_pdf2text_desc:'PDF से सादा टेक्स्ट एक .txt फ़ाइल के रूप में निकालें।',
     badge_popular:'सबसे लोकप्रिय',
+    t_resizeimage_name:'इमेज का आकार बदलें', t_resizeimage_desc:'इमेज को एक निश्चित चौड़ाई में बदलें, सीधे आपके ब्राउज़र में।',
+    resize_width_label:'लक्ष्य चौड़ाई', resize_width_hint:'px — ऊंचाई अपने आप समायोजित होगी',
+    t_rotatepdf_name:'PDF घुमाएं', t_rotatepdf_desc:'तिरछे पेज ठीक करें — एक साथ PDF के सभी पेज घुमाएं।',
+    t_excel2csv_name:'Excel से CSV', t_excel2csv_desc:'.xlsx स्प्रेडशीट को सादी .csv फ़ाइल में बदलें।',
+    rotate_angle_label:'रोटेशन', rotate_option_90:'90° क्लॉकवाइज घुमाएं', rotate_option_180:'180° घुमाएं', rotate_option_270:'90° एंटी-क्लॉकवाइज घुमाएं',
+    rv_confirm_title:'एक छोटा विज्ञापन देखें?', rv_confirm_body:'30 सेकंड का वीडियो विज्ञापन देखकर आपको अभी 3 नए मुफ़्त कन्वर्ज़न मिलेंगे।',
+    rv_confirm_watch:'विज्ञापन देखें', rv_confirm_cancel:'अभी नहीं',
+    rv_playing_title:'विज्ञापन चल रहा है…', rv_playing_body:'(परीक्षण के लिए सिम्युलेटेड — एक वास्तविक विज्ञापन नेटवर्क यहाँ अपना खुद का प्लेयर दिखाएगा।)',
+    rv_success_title:'इनाम मिल गया!', rv_success_body:'आपको 3 नए मुफ़्त कन्वर्ज़न मिल गए हैं।', rv_success_continue:'जारी रखें',
   },
   ur: { dir:'rtl', name:'اردو',
     seo:{ title:'BeastConverter: مفت PDF سے Word، 100% نجی', description:'PDF کو Word میں تبدیل کریں، PDF کمپریس کریں اور مزید — مکمل طور پر آپ کے براؤزر میں۔ فائلیں کبھی سرور پر اپ لوڈ نہیں ہوتیں۔ مفت اور محفوظ۔' },
@@ -1184,7 +1334,7 @@ const I18N = {
     pw_countdown_label:'آپ کی مفت تبدیلیاں ری سیٹ ہونے تک',
     pw_video:'مفت میں فوری تبدیلی کے لیے 30 سیکنڈ کی ویڈیو دیکھیں', pw_video_sub:'ری وارڈڈ ویڈیو · اکاؤنٹ کی ضرورت نہیں',
     pw_pass:'24 گھنٹے کے بیسٹ پاس سے فوری طور پر انلاک کریں — 7 DKK / 1 EUR', pw_pass_sub:'لامحدود تبدیلیاں · Stripe سے محفوظ',
-    pw_value_compare_title:'بیسٹ پاس کیوں؟', pw_value_compare_body:'دیگر آن لائن ٹولز 70+ DKK/ماہ چارج کرتے ہیں۔ BeastConverter آپ کو صرف 7 DKK میں 24 گھنٹے کی پریمیم لوکل طاقت دیتا ہے۔ کوئی سبسکرپشن نہیں۔ کوئی چھپا ہوا جال نہیں۔ Stripe کے ذریعے 100% SSL محفوظ۔',
+    pw_value_compare_title:'بیسٹ پاس کیوں؟', pw_value_compare_body:'دیگر آن لائن ٹولز 70+ DKK/ماہ چارج کرتے ہیں۔ BeastConverter آپ کو صرف 7 DKK میں 24 گھنٹے کی پریمیم لوکل طاقت دیتا ہے۔ کوئی سبسکرپشن نہیں۔ کوئی چھپا ہوا جال نہیں۔ Stripe کے ذریعے 100% SSL محفوظ۔ اشتہارات برقرار رہتے ہیں — اسی وجہ سے ہم اتنی کم قیمت رکھ پاتے ہیں۔',
     ab_title:'ہمیں ایک ایڈ بلاکر ملا',
     ab_sub:'ہم سمجھتے ہیں، اشتہارات پریشان کن ہو سکتے ہیں۔ لیکن دوسرے کنورٹرز کے برعکس، BeastConverter مکمل طور پر آپ کے براؤزر میں چلتا ہے۔ ہم آپ کا ڈیٹا اکٹھا نہیں کرتے، اور مہنگے کلاؤڈ سرورز استعمال نہیں کرتے۔ بیسٹ کو زندہ رکھنے کے لیے بس اشتہارات کی ضرورت ہے۔ مفت جاری رکھنے کے لیے ہمیں وائٹ لسٹ کریں، ایک مختصر ری وارڈڈ ویڈیو دیکھیں، یا 7 DKK میں پاس لیں۔',
     ab_video:'اس کے بجائے ایک ویڈیو دیکھیں',
@@ -1208,6 +1358,15 @@ const I18N = {
     t_word2pdf_name:'Word سے PDF', t_word2pdf_desc:'.docx کو شیئر کے قابل، پرنٹ کے لیے تیار PDF میں تبدیل کریں۔',
     t_pdf2text_name:'PDF سے ٹیکسٹ', t_pdf2text_desc:'PDF سے سادہ متن ایک .txt فائل کے طور پر نکالیں۔',
     badge_popular:'سب سے مقبول',
+    t_resizeimage_name:'تصویر کا سائز تبدیل کریں', t_resizeimage_desc:'تصویر کو ایک مخصوص چوڑائی میں تبدیل کریں، براہ راست آپ کے براؤزر میں۔',
+    resize_width_label:'مطلوبہ چوڑائی', resize_width_hint:'px — اونچائی خودکار طور پر ایڈجسٹ ہوگی',
+    t_rotatepdf_name:'PDF گھمائیں', t_rotatepdf_desc:'ترچھے صفحات ٹھیک کریں — PDF کے تمام صفحات ایک ساتھ گھمائیں۔',
+    t_excel2csv_name:'Excel سے CSV', t_excel2csv_desc:'.xlsx اسپریڈ شیٹ کو سادہ .csv فائل میں تبدیل کریں۔',
+    rotate_angle_label:'گردش', rotate_option_90:'90° گھڑی وار گھمائیں', rotate_option_180:'180° گھمائیں', rotate_option_270:'90° گھڑی کے خلاف گھمائیں',
+    rv_confirm_title:'ایک مختصر اشتہار دیکھیں؟', rv_confirm_body:'30 سیکنڈ کا ویڈیو اشتہار دیکھ کر آپ کو ابھی 3 نئے مفت تبدیلیاں ملیں گی۔',
+    rv_confirm_watch:'اشتہار دیکھیں', rv_confirm_cancel:'ابھی نہیں',
+    rv_playing_title:'اشتہار چل رہا ہے…', rv_playing_body:'(ٹیسٹنگ کے لیے سیمولیٹڈ — ایک حقیقی ایڈ نیٹ ورک یہاں اپنا پلیئر دکھائے گا۔)',
+    rv_success_title:'انعام مل گیا!', rv_success_body:'آپ کو 3 نئی مفت تبدیلیاں مل گئیں۔', rv_success_continue:'جاری رکھیں',
   },
   ar: { dir:'rtl', name:'العربية',
     seo:{ title:'BeastConverter: PDF إلى Word مجانًا وخصوصية', description:'حوّل PDF إلى Word واضغط ملفات PDF والمزيد — بالكامل داخل متصفحك. الملفات لا تُرفع لأي خادم أبدًا. أداة تحويل ملفات مجانية وآمنة.' },
@@ -1231,7 +1390,7 @@ const I18N = {
     pw_countdown_label:'حتى إعادة ضبط تحويلاتك المجانية',
     pw_video:'شاهد فيديو مدته 30 ثانية للتحويل فورًا مجانًا', pw_video_sub:'فيديو مكافأة · لا حاجة لحساب',
     pw_pass:'افتح فورًا ببطاقة الوحش لمدة 24 ساعة — 7 كرونة دنماركية / 1 يورو', pw_pass_sub:'تحويلات غير محدودة · محمي بواسطة Stripe',
-    pw_value_compare_title:'لماذا بطاقة الوحش؟', pw_value_compare_body:'الأدوات الأخرى عبر الإنترنت تتقاضى 70+ كرونة دنماركية/شهريًا. يمنحك BeastConverter 24 ساعة من القوة المحلية المميزة مقابل 7 كرونة فقط. بلا اشتراكات. بلا فخاخ خفية. آمن بنسبة 100% عبر SSL بواسطة Stripe.',
+    pw_value_compare_title:'لماذا بطاقة الوحش؟', pw_value_compare_body:'الأدوات الأخرى عبر الإنترنت تتقاضى 70+ كرونة دنماركية/شهريًا. يمنحك BeastConverter 24 ساعة من القوة المحلية المميزة مقابل 7 كرونة فقط. بلا اشتراكات. بلا فخاخ خفية. آمن بنسبة 100% عبر SSL بواسطة Stripe. تبقى الإعلانات — وهذا ما يتيح لنا هذا السعر المنخفض.',
     ab_title:'لاحظنا وجود مانع إعلانات',
     ab_sub:'نتفهم أن الإعلانات قد تكون مزعجة. لكن على عكس أدوات التحويل الأخرى، يعمل BeastConverter بنسبة 100% داخل متصفحك. نحن لا نجمع بياناتك، ولا نستخدم خوادم سحابية باهظة. نحتاج فقط إلى الإعلانات لإبقاء الوحش على قيد الحياة. أضفنا للقائمة البيضاء للمتابعة مجانًا، أو شاهد فيديو مكافأة قصير، أو احصل على بطاقة بـ 7 كرونة دنماركية.',
     ab_video:'شاهد فيديو بدلاً من ذلك',
@@ -1255,6 +1414,15 @@ const I18N = {
     t_word2pdf_name:'Word إلى PDF', t_word2pdf_desc:'حوّل ملف .docx إلى PDF قابل للمشاركة وجاهز للطباعة.',
     t_pdf2text_name:'PDF إلى نص', t_pdf2text_desc:'استخرج النص العادي من PDF كملف .txt.',
     badge_popular:'الأكثر شعبية',
+    t_resizeimage_name:'تغيير حجم الصورة', t_resizeimage_desc:'غيّر حجم صورة إلى عرض محدد، مباشرة داخل متصفحك.',
+    resize_width_label:'العرض المستهدف', resize_width_hint:'بكسل — يتم ضبط الارتفاع تلقائيًا',
+    t_rotatepdf_name:'تدوير PDF', t_rotatepdf_desc:'صحّح الصفحات المائلة — دوّر كل صفحات PDF دفعة واحدة.',
+    t_excel2csv_name:'Excel إلى CSV', t_excel2csv_desc:'حوّل جدول بيانات .xlsx إلى ملف .csv بسيط.',
+    rotate_angle_label:'التدوير', rotate_option_90:'تدوير 90° مع عقارب الساعة', rotate_option_180:'تدوير 180°', rotate_option_270:'تدوير 90° عكس عقارب الساعة',
+    rv_confirm_title:'مشاهدة إعلان قصير؟', rv_confirm_body:'إعلان فيديو مدته 30 ثانية يمنحك 3 تحويلات مجانية جديدة، الآن.',
+    rv_confirm_watch:'شاهد الإعلان', rv_confirm_cancel:'ليس الآن',
+    rv_playing_title:'الإعلان قيد التشغيل…', rv_playing_body:'(محاكاة للاختبار — شبكة إعلانات حقيقية ستعرض مشغلها الخاص هنا.)',
+    rv_success_title:'تم منح المكافأة!', rv_success_body:'حصلت على 3 تحويلات مجانية جديدة.', rv_success_continue:'متابعة',
   },
   zh: { dir:'ltr', name:'中文（普通话）',
     seo:{ title:'BeastConverter：免费 PDF 转 Word，浏览器内 100% 私密', description:'在浏览器中转换 PDF 为 Word、压缩 PDF 等 — 文件从不上传服务器。免费、私密、安全的文件转换工具。' },
@@ -1278,7 +1446,7 @@ const I18N = {
     pw_countdown_label:'距离免费转换重置还有',
     pw_video:'观看30秒视频即可免费立即转换', pw_video_sub:'奖励视频 · 无需账号',
     pw_pass:'使用24小时猛兽通行证立即解锁 — 7丹麦克朗 / 1欧元', pw_pass_sub:'无限次转换 · 由 Stripe 保障',
-    pw_value_compare_title:'为什么选择猛兽通行证？', pw_value_compare_body:'其他在线工具每月收费70丹麦克朗以上。BeastConverter 仅需7丹麦克朗即可获得24小时本地高级算力。无需订阅，无隐藏陷阱，通过 Stripe 提供100% SSL安全保障。',
+    pw_value_compare_title:'为什么选择猛兽通行证？', pw_value_compare_body:'其他在线工具每月收费70丹麦克朗以上。BeastConverter 仅需7丹麦克朗即可获得24小时本地高级算力。无需订阅，无隐藏陷阱，通过 Stripe 提供100% SSL安全保障。广告依然保留 — 这正是我们能提供这么低价格的原因。',
     ab_title:'我们检测到广告拦截器',
     ab_sub:'我们理解，广告可能会让人厌烦。但与其他转换工具不同，BeastConverter 完全在你的浏览器中运行。我们不收集你的数据，也不使用昂贵的云服务器。我们只是需要广告来维持这头猛兽的生存。请将我们加入白名单以继续免费使用，或观看一段简短的奖励视频，或购买7丹麦克朗的通行证。',
     ab_video:'改为观看视频',
@@ -1302,6 +1470,15 @@ const I18N = {
     t_word2pdf_name:'Word 转 PDF', t_word2pdf_desc:'将 .docx 转换为可分享、可打印的 PDF。',
     t_pdf2text_name:'PDF 转文本', t_pdf2text_desc:'将 PDF 中的纯文本提取为 .txt 文件。',
     badge_popular:'最受欢迎',
+    t_resizeimage_name:'调整图片大小', t_resizeimage_desc:'在浏览器中将图片缩放到精确宽度。',
+    resize_width_label:'目标宽度', resize_width_hint:'px — 高度将自动按比例调整',
+    t_rotatepdf_name:'旋转 PDF', t_rotatepdf_desc:'修正倾斜页面 — 一次性旋转 PDF 的所有页面。',
+    t_excel2csv_name:'Excel 转 CSV', t_excel2csv_desc:'将 .xlsx 表格转换为纯 .csv 文件。',
+    rotate_angle_label:'旋转角度', rotate_option_90:'顺时针旋转90°', rotate_option_180:'旋转180°', rotate_option_270:'逆时针旋转90°',
+    rv_confirm_title:'观看一段简短广告？', rv_confirm_body:'观看30秒视频广告，即可立即获得3次全新免费转换。',
+    rv_confirm_watch:'观看广告', rv_confirm_cancel:'暂不',
+    rv_playing_title:'广告播放中…', rv_playing_body:'（此为测试模拟 — 真实广告网络将在此处显示其自己的播放器。）',
+    rv_success_title:'奖励已发放！', rv_success_body:'你已获得3次全新免费转换。', rv_success_continue:'继续',
   },
   yue: { dir:'ltr', name:'廣東話',
     seo:{ title:'BeastConverter：免費 PDF 轉 Word，瀏覽器入面 100% 私密', description:'喺瀏覽器入面轉換 PDF 做 Word、壓縮 PDF 仲有更多 — 檔案永遠唔會上傳伺服器。免費、私密、安全嘅檔案轉換工具。' },
@@ -1325,7 +1502,7 @@ const I18N = {
     pw_countdown_label:'距離免費轉換重置仲有',
     pw_video:'睇30秒短片即可免費即時轉換', pw_video_sub:'獎勵短片 · 唔使帳戶',
     pw_pass:'用24小時猛獸通行證即刻解鎖 — 7丹麥克朗 / 1歐元', pw_pass_sub:'無限次轉換 · 由 Stripe 保障',
-    pw_value_compare_title:'點解要買猛獸通行證？', pw_value_compare_body:'其他網上工具每個月收70丹麥克朗以上。BeastConverter 淨係要7丹麥克朗就俾你24小時本地高級運算力。唔使訂閱，冇隱藏陷阱，透過 Stripe 提供100% SSL安全保障。',
+    pw_value_compare_title:'點解要買猛獸通行證？', pw_value_compare_body:'其他網上工具每個月收70丹麥克朗以上。BeastConverter 淨係要7丹麥克朗就俾你24小時本地高級運算力。唔使訂閱，冇隱藏陷阱，透過 Stripe 提供100% SSL安全保障。廣告仍然保留 — 呢個就係我哋可以提供咁低價錢嘅原因。',
     ab_title:'我哋偵測到廣告攔截器',
     ab_sub:'我哋明白，廣告可能會好煩。但同其他轉換工具唔同，BeastConverter 完全喺你嘅瀏覽器入面運作。我哋唔會收集你嘅數據，亦都唔會用貴嘅雲端伺服器。我哋淨係需要廣告嚟維持呢隻猛獸生存。請將我哋加入白名單以繼續免費使用，或者睇一段簡短嘅獎勵短片，或者買個7丹麥克朗嘅通行證。',
     ab_video:'不如睇短片',
@@ -1349,6 +1526,15 @@ const I18N = {
     t_word2pdf_name:'Word 轉 PDF', t_word2pdf_desc:'將 .docx 轉換做可分享、可列印嘅 PDF。',
     t_pdf2text_name:'PDF 轉文字', t_pdf2text_desc:'將 PDF 入面嘅純文字提取做 .txt 檔案。',
     badge_popular:'最受歡迎',
+    t_resizeimage_name:'調整圖片大小', t_resizeimage_desc:'喺瀏覽器入面將圖片縮放到精確闊度。',
+    resize_width_label:'目標闊度', resize_width_hint:'px — 高度會自動按比例調整',
+    t_rotatepdf_name:'旋轉 PDF', t_rotatepdf_desc:'修正傾斜頁面 — 一次過旋轉 PDF 嘅所有頁面。',
+    t_excel2csv_name:'Excel 轉 CSV', t_excel2csv_desc:'將 .xlsx 試算表轉換做純 .csv 檔案。',
+    rotate_angle_label:'旋轉角度', rotate_option_90:'順時針旋轉90°', rotate_option_180:'旋轉180°', rotate_option_270:'逆時針旋轉90°',
+    rv_confirm_title:'睇一段簡短廣告？', rv_confirm_body:'睇30秒短片廣告，即刻俾你3次全新免費轉換。',
+    rv_confirm_watch:'睇廣告', rv_confirm_cancel:'而家唔使',
+    rv_playing_title:'廣告播放緊…', rv_playing_body:'（呢個係測試模擬 — 真實廣告網絡會喺呢度顯示佢自己嘅播放器。）',
+    rv_success_title:'獎勵已發放！', rv_success_body:'你已經攞到3次全新免費轉換。', rv_success_continue:'繼續',
   },
   pt: { dir:'ltr', name:'Português',
     seo:{ title:'BeastConverter: PDF para Word Grátis e Privado', description:'Converta PDF para Word, comprima PDF e mais — 100% no seu navegador. Arquivos nunca são enviados a um servidor. Conversão grátis e segura.' },
@@ -1372,7 +1558,7 @@ const I18N = {
     pw_countdown_label:'até suas conversões gratuitas reiniciarem',
     pw_video:'Assista um vídeo de 30s para converter instantaneamente, grátis', pw_video_sub:'Vídeo recompensado · sem necessidade de conta',
     pw_pass:'Desbloqueie instantaneamente com um Beast Pass de 24 horas — 7 DKK / 1 EUR', pw_pass_sub:'Conversões ilimitadas · protegido pela Stripe',
-    pw_value_compare_title:'Por que um Beast Pass?', pw_value_compare_body:'Outras ferramentas online cobram 70+ DKK/mês. O BeastConverter te dá 24 horas de poder local premium por apenas 7 DKK. Sem assinaturas. Sem pegadinhas. 100% seguro com SSL via Stripe.',
+    pw_value_compare_title:'Por que um Beast Pass?', pw_value_compare_body:'Outras ferramentas online cobram 70+ DKK/mês. O BeastConverter te dá 24 horas de poder local premium por apenas 7 DKK. Sem assinaturas. Sem pegadinhas. 100% seguro com SSL via Stripe. Os anúncios permanecem — é assim que mantemos o preço tão baixo.',
     ab_title:'Detectamos um bloqueador de anúncios',
     ab_sub:'Entendemos que anúncios podem ser irritantes. Mas, diferente de outros conversores, o BeastConverter roda 100% no seu navegador. Não coletamos seus dados, nem usamos servidores em nuvem caros. Só precisamos de anúncios para manter a fera viva. Adicione-nos à lista de permissões para continuar de graça, assista a um vídeo recompensado rápido, ou pegue um passe de 7 DKK.',
     ab_video:'Assistir a um vídeo em vez disso',
@@ -1396,6 +1582,15 @@ const I18N = {
     t_word2pdf_name:'Word para PDF', t_word2pdf_desc:'Transforma um .docx em um PDF pronto para compartilhar e imprimir.',
     t_pdf2text_name:'PDF para texto', t_pdf2text_desc:'Extrai o texto simples de um PDF como arquivo .txt.',
     badge_popular:'Mais popular',
+    t_resizeimage_name:'Redimensionar imagem', t_resizeimage_desc:'Redimensione uma imagem para uma largura exata, direto no seu navegador.',
+    resize_width_label:'Largura desejada', resize_width_hint:'px — a altura se ajusta automaticamente',
+    t_rotatepdf_name:'Girar PDF', t_rotatepdf_desc:'Corrija páginas de lado — gire todas as páginas de um PDF de uma vez.',
+    t_excel2csv_name:'Excel para CSV', t_excel2csv_desc:'Transforme uma planilha .xlsx em um arquivo .csv simples.',
+    rotate_angle_label:'Rotação', rotate_option_90:'Girar 90° no sentido horário', rotate_option_180:'Girar 180°', rotate_option_270:'Girar 90° no sentido anti-horário',
+    rv_confirm_title:'Assistir a um anúncio rápido?', rv_confirm_body:'Um anúncio em vídeo de 30 segundos te dá 3 novas conversões grátis, agora mesmo.',
+    rv_confirm_watch:'Assistir ao anúncio', rv_confirm_cancel:'Agora não',
+    rv_playing_title:'Anúncio em reprodução…', rv_playing_body:'(Simulado para testes — uma rede de anúncios real mostrará seu próprio player aqui.)',
+    rv_success_title:'Recompensa concedida!', rv_success_body:'Você já tem 3 novas conversões grátis.', rv_success_continue:'Continuar',
   },
   vi: { dir:'ltr', name:'Tiếng Việt',
     seo:{ title:'BeastConverter: PDF sang Word Miễn Phí, Riêng Tư', description:'Chuyển PDF sang Word, nén PDF và hơn thế — hoàn toàn trong trình duyệt. Tệp không bao giờ tải lên máy chủ. Chuyển đổi tệp miễn phí, an toàn.' },
@@ -1419,7 +1614,7 @@ const I18N = {
     pw_countdown_label:'cho đến khi các lượt chuyển đổi miễn phí của bạn được đặt lại',
     pw_video:'Xem video 30 giây để chuyển đổi ngay lập tức, miễn phí', pw_video_sub:'Video có thưởng · không cần tài khoản',
     pw_pass:'Mở khóa ngay với Beast Pass 24 giờ — 7 DKK / 1 EUR', pw_pass_sub:'Chuyển đổi không giới hạn · được bảo vệ bởi Stripe',
-    pw_value_compare_title:'Tại sao nên mua Beast Pass?', pw_value_compare_body:'Các công cụ trực tuyến khác tính phí 70+ DKK/tháng. BeastConverter cho bạn 24 giờ sức mạnh cục bộ cao cấp chỉ với 7 DKK. Không đăng ký. Không bẫy ẩn. Bảo mật SSL 100% qua Stripe.',
+    pw_value_compare_title:'Tại sao nên mua Beast Pass?', pw_value_compare_body:'Các công cụ trực tuyến khác tính phí 70+ DKK/tháng. BeastConverter cho bạn 24 giờ sức mạnh cục bộ cao cấp chỉ với 7 DKK. Không đăng ký. Không bẫy ẩn. Bảo mật SSL 100% qua Stripe. Quảng cáo vẫn được giữ — đó là cách chúng tôi duy trì mức giá thấp này.',
     ab_title:'Chúng tôi phát hiện trình chặn quảng cáo',
     ab_sub:'Chúng tôi hiểu, quảng cáo có thể gây khó chịu. Nhưng khác với các công cụ chuyển đổi khác, BeastConverter chạy 100% trong trình duyệt của bạn. Chúng tôi không thu thập dữ liệu của bạn, và không dùng máy chủ đám mây đắt đỏ. Chúng tôi chỉ cần quảng cáo để giữ cho quái thú sống sót. Hãy thêm chúng tôi vào danh sách cho phép để tiếp tục miễn phí, xem một video có thưởng ngắn, hoặc lấy một pass giá 7 DKK.',
     ab_video:'Xem video thay vào đó',
@@ -1443,6 +1638,15 @@ const I18N = {
     t_word2pdf_name:'Word sang PDF', t_word2pdf_desc:'Biến tệp .docx thành PDF sẵn sàng chia sẻ và in ấn.',
     t_pdf2text_name:'PDF sang văn bản', t_pdf2text_desc:'Trích xuất văn bản thuần từ PDF thành tệp .txt.',
     badge_popular:'Phổ biến nhất',
+    t_resizeimage_name:'Đổi kích thước ảnh', t_resizeimage_desc:'Thay đổi kích thước ảnh theo chiều rộng chính xác, ngay trong trình duyệt.',
+    resize_width_label:'Chiều rộng mong muốn', resize_width_hint:'px — chiều cao tự động điều chỉnh theo',
+    t_rotatepdf_name:'Xoay PDF', t_rotatepdf_desc:'Sửa trang bị nghiêng — xoay tất cả các trang trong PDF cùng lúc.',
+    t_excel2csv_name:'Excel sang CSV', t_excel2csv_desc:'Chuyển bảng tính .xlsx thành tệp .csv đơn giản.',
+    rotate_angle_label:'Xoay', rotate_option_90:'Xoay 90° theo chiều kim đồng hồ', rotate_option_180:'Xoay 180°', rotate_option_270:'Xoay 90° ngược chiều kim đồng hồ',
+    rv_confirm_title:'Xem một quảng cáo ngắn?', rv_confirm_body:'Một quảng cáo video 30 giây sẽ cho bạn 3 lượt chuyển đổi miễn phí mới, ngay bây giờ.',
+    rv_confirm_watch:'Xem quảng cáo', rv_confirm_cancel:'Để sau',
+    rv_playing_title:'Đang phát quảng cáo…', rv_playing_body:'(Mô phỏng để thử nghiệm — mạng quảng cáo thực sẽ hiển thị trình phát riêng tại đây.)',
+    rv_success_title:'Đã nhận thưởng!', rv_success_body:'Bạn đã có 3 lượt chuyển đổi miễn phí mới.', rv_success_continue:'Tiếp tục',
   },
   id: { dir:'ltr', name:'Bahasa Indonesia',
     seo:{ title:'BeastConverter: PDF ke Word Gratis, 100% Privat', description:'Ubah PDF ke Word, kompres PDF, dan lainnya — 100% di browser Anda. File tidak pernah diunggah ke server. Konversi file gratis dan aman.' },
@@ -1466,7 +1670,7 @@ const I18N = {
     pw_countdown_label:'sampai konversi gratis Anda diatur ulang',
     pw_video:'Tonton video 30 detik untuk konversi instan, gratis', pw_video_sub:'Video berhadiah · tanpa perlu akun',
     pw_pass:'Buka langsung dengan Beast Pass 24 Jam — 7 DKK / 1 EUR', pw_pass_sub:'Konversi tanpa batas · diamankan oleh Stripe',
-    pw_value_compare_title:'Kenapa harus Beast Pass?', pw_value_compare_body:'Alat online lain mengenakan biaya 70+ DKK/bulan. BeastConverter memberi Anda 24 jam tenaga lokal premium hanya dengan 7 DKK. Tanpa langganan. Tanpa jebakan tersembunyi. 100% aman SSL via Stripe.',
+    pw_value_compare_title:'Kenapa harus Beast Pass?', pw_value_compare_body:'Alat online lain mengenakan biaya 70+ DKK/bulan. BeastConverter memberi Anda 24 jam tenaga lokal premium hanya dengan 7 DKK. Tanpa langganan. Tanpa jebakan tersembunyi. 100% aman SSL via Stripe. Iklan tetap ada — begitulah cara kami menjaga harga serendah ini.',
     ab_title:'Kami mendeteksi pemblokir iklan',
     ab_sub:'Kami mengerti, iklan bisa menyebalkan. Tapi tidak seperti konverter lain, BeastConverter berjalan 100% di browser Anda. Kami tidak mengumpulkan data Anda, dan tidak menggunakan server cloud yang mahal. Kami hanya butuh iklan untuk menjaga sang monster tetap hidup. Tambahkan kami ke daftar putih untuk lanjut gratis, tonton video berhadiah singkat, atau ambil pass seharga 7 DKK.',
     ab_video:'Tonton video saja',
@@ -1490,6 +1694,15 @@ const I18N = {
     t_word2pdf_name:'Word ke PDF', t_word2pdf_desc:'Ubah file .docx menjadi PDF yang siap dibagikan dan dicetak.',
     t_pdf2text_name:'PDF ke teks', t_pdf2text_desc:'Ekstrak teks biasa dari PDF sebagai file .txt.',
     badge_popular:'Paling populer',
+    t_resizeimage_name:'Ubah ukuran gambar', t_resizeimage_desc:'Ubah ukuran gambar ke lebar tertentu, langsung di browser Anda.',
+    resize_width_label:'Lebar target', resize_width_hint:'px — tinggi menyesuaikan otomatis',
+    t_rotatepdf_name:'Putar PDF', t_rotatepdf_desc:'Perbaiki halaman miring — putar semua halaman PDF sekaligus.',
+    t_excel2csv_name:'Excel ke CSV', t_excel2csv_desc:'Ubah spreadsheet .xlsx menjadi file .csv sederhana.',
+    rotate_angle_label:'Rotasi', rotate_option_90:'Putar 90° searah jarum jam', rotate_option_180:'Putar 180°', rotate_option_270:'Putar 90° berlawanan arah jarum jam',
+    rv_confirm_title:'Tonton iklan singkat?', rv_confirm_body:'Iklan video 30 detik memberi Anda 3 konversi gratis baru, sekarang juga.',
+    rv_confirm_watch:'Tonton iklan', rv_confirm_cancel:'Nanti saja',
+    rv_playing_title:'Iklan sedang diputar…', rv_playing_body:'(Disimulasikan untuk pengujian — jaringan iklan sungguhan akan menampilkan pemutarnya sendiri di sini.)',
+    rv_success_title:'Hadiah diberikan!', rv_success_body:'Anda mendapat 3 konversi gratis baru.', rv_success_continue:'Lanjutkan',
   },
 };
 
@@ -1511,7 +1724,10 @@ let currentLang = 'en';
 function applyLanguage(code, persist = true){
   if(!I18N[code]) code = 'en';
   currentLang = code;
-  if(persist) localStorage.setItem('bc_lang', code);
+  if(persist){
+    localStorage.setItem('bc_lang', code);
+    syncLangToURL(code); // explicit choice → make the current URL shareable in this language
+  }
   const dict = I18N[code];
   document.documentElement.lang = code;
   document.documentElement.dir = dict.dir;
@@ -1609,14 +1825,53 @@ function guessLanguageFromBrowser(){
 /* Orchestrates the default-language priority chain and applies
    whichever language wins. Called once from init(). Synchronous —
    no network involved, so there's no flash of the wrong language
-   while a lookup is in flight. */
+   while a lookup is in flight.
+
+   Priority, highest first:
+     1. ?lang=xx in the URL — lets a shared link carry language state
+        for REAL VISITORS who click it. See the big caveat below.
+     2. Saved preference (explicit past choice)
+     3. Browser locale guess
+     4. English
+
+   HONEST SCOPE OF WHAT ?lang= DOES AND DOES NOT FIX:
+   This makes a link like beastconverter.com/?lang=da correctly load
+   in Danish for an actual person who clicks it — that's a genuine,
+   real improvement over always defaulting to English. It does NOT
+   fix Facebook/X/LinkedIn share-preview cards, which will always
+   show the English og:title/og:description from <head>, because
+   those bots read the raw HTML without executing this (or any)
+   JavaScript — the query string is invisible to them in the sense
+   that matters: it never changes what raw HTML this URL serves.
+   Solving THAT requires real per-language static pages or edge
+   middleware, not a client-side query-string trick. Don't mistake
+   this feature for having solved the sharing-preview problem. */
 function initLanguage(){
+  const params = new URLSearchParams(window.location.search);
+  const urlLang = params.get('lang');
+  if(urlLang && I18N[urlLang]){
+    applyLanguage(urlLang, false); // link-carried, not necessarily a saved preference
+    return;
+  }
+
   const storedPref = localStorage.getItem('bc_lang');
   if(storedPref && I18N[storedPref]){
     applyLanguage(storedPref, false); // explicit past choice
     return;
   }
   applyLanguage(guessLanguageFromBrowser(), false);
+}
+
+/* Keeps the ?lang= URL param in sync whenever the language changes,
+   so the CURRENT page's URL is always shareable with language state
+   intact for the next human who clicks it (again: not for bots —
+   see the caveat on initLanguage() above). Uses replaceState, not
+   pushState, so switching languages doesn't spam the back button. */
+function syncLangToURL(code){
+  const params = new URLSearchParams(window.location.search);
+  params.set('lang', code);
+  const newURL = window.location.pathname + '?' + params.toString();
+  history.replaceState({}, '', newURL);
 }
 
 /* ---------------------------------------------------------------
@@ -1651,6 +1906,9 @@ const TOOLS = [
   { id:'heic2jpg', nameKey:'t_heic2jpg_name', descKey:'t_heic2jpg_desc', accept:['.heic','.heif'], icon:'img', color:'#B57BEE' },
   { id:'pdf2text', nameKey:'t_pdf2text_name', descKey:'t_pdf2text_desc', accept:['.pdf'], icon:'txt', color:'#7C8B9C' },
   { id:'csv2xlsx', nameKey:'t_csv2xlsx_name', descKey:'t_csv2xlsx_desc', accept:['.csv'], icon:'sheet', color:'#17C989' },
+  { id:'resizeimage', nameKey:'t_resizeimage_name', descKey:'t_resizeimage_desc', accept:['.png','.jpg','.jpeg','.webp'], icon:'img', color:'#B57BEE' },
+  { id:'rotatepdf', nameKey:'t_rotatepdf_name', descKey:'t_rotatepdf_desc', accept:['.pdf'], icon:'pdf', color:'#4C8DFF' },
+  { id:'excel2csv', nameKey:'t_excel2csv_name', descKey:'t_excel2csv_desc', accept:['.xlsx'], icon:'sheet', color:'#F5A524' },
 ];
 
 const ICONS = {
@@ -1691,6 +1949,8 @@ function selectTool(id){
   document.querySelectorAll('.tool-card').forEach(c=>{
     c.classList.toggle('active', c.dataset.toolId === id);
   });
+  document.getElementById('resize-options').style.display = (id === 'resizeimage') ? 'flex' : 'none';
+  document.getElementById('rotate-options').style.display = (id === 'rotatepdf') ? 'flex' : 'none';
   updateBarSelection();
 }
 
@@ -1748,29 +2008,18 @@ function grantBeastPass(hours = 24){
   renderMeter();
   hidePaywallModal();
   refreshConvertButtonState();
-  updateAdVisibility();
 }
 
-/* Hides the three ad placeholder slots while a Beast Pass is active.
-   HONEST LIMIT — read before relying on this for anything: the flag
-   this checks (hasActiveBeastPass(), backed by localStorage) is set
-   entirely client-side (see the big comment block above
-   initiateStripeCheckout() below). Anyone who opens devtools can run
-   localStorage.setItem('bc_pass_expiry', Date.now()+864e5) and get an
-   ad-free, unlimited-conversion experience for free, permanently,
-   with zero payment. For a 7 DKK impulse-buy microtransaction this
-   is a deliberate, defensible trade-off — building real server-side
-   session auth to stop a handful of people from doing that isn't
-   proportionate to what's at stake. It would NOT be an acceptable
-   trade-off for anything higher-value; don't reuse this pattern for
-   a real subscription product without real backend verification. */
-function updateAdVisibility(){
-  const hide = beastPassActive || hasActiveBeastPass();
-  ['ad-top', 'ad-sidebar', 'ad-below-download'].forEach(id=>{
-    const el = document.getElementById(id);
-    if(el) el.style.display = hide ? 'none' : '';
-  });
-}
+/* ---------------------------------------------------------------
+   BUSINESS RULE, made explicit: the Beast Pass removes ONLY the
+   3-conversion / 15-minute limit. It does NOT hide ads — this is a
+   deliberate dual-monetization decision, not an oversight. There is
+   intentionally no updateAdVisibility()-style function here; the
+   three ad slots (.ad-top, .ad-sidebar, .ad-below-download) are
+   always visible in the HTML with no JS toggling their display,
+   regardless of pass status. If this ever needs to change, the right
+   place to add it back is here — but as of this build, don't.
+   --------------------------------------------------------------- */
 
 /* Renders the "cockpit gauge" readout above the drop zone:
    3 notches + a JetBrains Mono technical readout string, e.g.
@@ -1834,7 +2083,6 @@ function startPassExpiryCountdown(){
       beastPassActive = false;
       renderMeter(); // falls through to the normal free-tier state above
       refreshConvertButtonState();
-      updateAdVisibility();
       return;
     }
     const totalSeconds = Math.floor(msLeft / 1000);
@@ -1896,18 +2144,59 @@ function startCountdown(){
   countdownInterval = setInterval(tick, 1000);
 }
 
-/* "Watch a quick video" — rewarded-video placeholder. Reachable from
-   both the paywall modal and the AdBlock soft-wall, since watching an
-   ad is one of the three ways out of either.
-   Wire this up to a real rewarded-ad SDK (e.g. Google Ad Manager
-   rewarded units) and call resetConversionCounter() in its
-   onRewardEarned callback — NOT before the ad has actually finished
-   playing, or you're just giving away free conversions with no ad
-   revenue to fund them. */
+/* ---------------------------------------------------------------
+   REWARDED VIDEO — honest status: NOT connected to a real ad network.
+   ---------------------------------------------------------------
+   What this currently does: shows a 3-step modal (confirm → simulated
+   "playing" → success) so the UX flow can be reviewed and tested.
+   The "playing" step is a timed pause with no actual video — nothing
+   is shown to the visitor and no ad impression is served or paid for.
+
+   What a REAL integration requires, in order:
+     1. A rewarded-video ad network account. Note: rewarded video is
+        a mature pattern for mobile apps/games; it is NOT a standard
+        AdSense feature for websites. You'd need Google Ad Manager
+        (a bigger product than AdSense) or a smaller web-specific
+        rewarded-ad network — research availability before assuming
+        this is a quick swap.
+     2. Their SDK's own player replaces the #rv-step-playing content
+        below — it takes over rendering the actual video, typically
+        in its own overlay/iframe.
+     3. resetConversionCounter() must ONLY be called from that SDK's
+        own "reward earned" callback — never on a timer, and never if
+        the person closes the ad early. Most networks require this
+        contractually, not just as good practice: rewarding incomplete
+        views is exactly what gets publishers suspended from ad
+        networks for policy violations.
+   The three functions below (showRewardedVideoModal / the confirm
+   button handler / the simulated timer) are the pieces to replace
+   once a real network is wired in — everything else (the modal
+   markup, the i18n copy, the reward-granting logic itself) can stay. */
 function watchRewardedVideoPlaceholder(){
-  alert('[Placeholder] A rewarded video ad would play here.\nOn completion, the SDK\'s reward callback should call resetConversionCounter().');
-  // Simulated reward for demo purposes:
-  resetConversionCounter();
+  document.getElementById('rewarded-video-modal').classList.add('show');
+  showRVStep('confirm');
+}
+
+function showRVStep(step){
+  ['confirm','playing','success'].forEach(s=>{
+    document.getElementById('rv-step-' + s).style.display = (s === step) ? 'block' : 'none';
+  });
+}
+
+function hideRewardedVideoModal(){
+  document.getElementById('rewarded-video-modal').classList.remove('show');
+}
+
+/* SIMULATION ONLY — see the honest-status comment above. Replace the
+   body of this function with your real ad SDK's "play ad" call once
+   one is integrated; call resetConversionCounter() only from that
+   SDK's reward-earned callback, not from a plain setTimeout like this. */
+function simulateRewardedVideoPlayback(){
+  showRVStep('playing');
+  setTimeout(()=>{
+    showRVStep('success');
+    resetConversionCounter({ closeModals:false }); // grant the reward, but keep this modal open to show the success step
+  }, 2500); // short simulated delay, NOT a real 30s ad — just enough to feel like something happened
 }
 
 /* Resets the 15-minute usage window completely — 0 used, fresh 3/3 —
@@ -1916,13 +2205,15 @@ function watchRewardedVideoPlaceholder(){
    games; it's intentionally more generous than a single +1 credit,
    since the whole point is to give people a reason to sit through
    the ad instead of bouncing. */
-function resetConversionCounter(){
+function resetConversionCounter({ closeModals = true } = {}){
   const usage = { count: 0, windowStart: Date.now() };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(usage));
   renderMeter();
   refreshConvertButtonState();
-  hidePaywallModal();
-  hideAdBlockModal();
+  if(closeModals){
+    hidePaywallModal();
+    hideAdBlockModal();
+  }
 }
 
 /* ---------------------------------------------------------------
@@ -2423,6 +2714,73 @@ const Converters = {
     }
     return results;
   },
+
+  /* Resize Image via canvas — pure browser primitive, no library needed.
+     Takes a single target WIDTH (from #resize-width-input) and scales
+     each queued image proportionally, computing its own height from
+     its own original aspect ratio. Deliberately width-only rather than
+     width+height: with multiple files of different original sizes in
+     one batch, one target width is far more usable than asking for an
+     exact width+height pair that would distort every file except one. */
+  async resizeimage(files){
+    const rawWidth = parseInt(document.getElementById('resize-width-input').value, 10);
+    const targetWidth = Math.max(16, Math.min(8000, isNaN(rawWidth) ? 1024 : rawWidth));
+    const results = [];
+    for(const {file} of files){
+      const img = await loadImageFromFile(file);
+      const scale = targetWidth / img.width;
+      const targetHeight = Math.max(1, Math.round(img.height * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth; canvas.height = targetHeight;
+      canvas.getContext('2d').drawImage(img, 0, 0, targetWidth, targetHeight);
+      const outIsPng = /png/i.test(file.type);
+      const blob = await canvasToBlob(canvas, outIsPng ? 'image/png' : 'image/jpeg', 0.92);
+      const ext = outIsPng ? '.png' : '.jpg';
+      results.push(downloadResult(file.name.replace(/\.[^.]+$/, '') + '-resized' + ext, blob));
+    }
+    return results;
+  },
+
+  /* Rotate PDF via pdf-lib. Rotation is RELATIVE to each page's current
+     orientation (adds the chosen angle to whatever rotation the page
+     already has), matching how rotation tools conventionally behave —
+     verified against pdf-lib's own documented pattern: read the current
+     angle via page.getRotation().angle, add the chosen amount, then
+     write it back with PDFLib.degrees(). */
+  async rotatepdf(files){
+    const { PDFDocument, degrees } = PDFLib;
+    const angle = parseInt(document.getElementById('rotate-angle-select').value, 10) || 90;
+    const results = [];
+    for(const {file} of files){
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const pdf = await PDFDocument.load(bytes);
+      pdf.getPages().forEach(page=>{
+        const current = page.getRotation().angle;
+        page.setRotation(degrees(current + angle));
+      });
+      const outBytes = await pdf.save();
+      results.push(downloadResult(file.name.replace(/\.pdf$/i,'') + '-rotated.pdf', new Blob([outBytes], {type:'application/pdf'})));
+    }
+    return results;
+  },
+
+  /* Excel (.xlsx) -> CSV via SheetJS — the reverse of csv2xlsx, using
+     the same already-loaded library. Only the first sheet is exported;
+     workbooks with multiple sheets would need one CSV per sheet, which
+     this tool deliberately keeps simple rather than building a sheet
+     picker UI for what's a fairly narrow use case. */
+  async excel2csv(files){
+    const results = [];
+    for(const {file} of files){
+      const data = new Uint8Array(await file.arrayBuffer());
+      const workbook = XLSX.read(data, { type:'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const csv = XLSX.utils.sheet_to_csv(worksheet);
+      results.push(downloadResult(file.name.replace(/\.xlsx$/i,'') + '.csv', new Blob([csv], {type:'text/csv'})));
+    }
+    return results;
+  },
 };
 
 async function runConversion(){
@@ -2539,6 +2897,8 @@ function renderResults(results){
 // pk_test_... key while developing, pk_live_... only once you're ready
 // to take real payments).
 const STRIPE_PUBLISHABLE_KEY = 'pk_test_51Tojub1Q1WEoih3D3SrAJSILhhAbkpT4Ad22izadeloSX1lpPqvdBBjwSjKkoSgTqFUUKj8f2jleOUw8XqjIryzM00EMe1OF5n'; // PLACEHOLDER
+
+
 // The backend endpoint that creates a Checkout Session (see
 // stripe-backend-example.js). Until this points at a real, deployed
 // endpoint, checkout falls back to DEMO_MODE below rather than failing
@@ -2646,7 +3006,6 @@ function setupCookieBanner(){
 function init(){
   document.getElementById('footer-year').textContent = new Date().getFullYear();
   beastPassActive = hasActiveBeastPass();
-  updateAdVisibility(); // hide ad slots immediately if a pass is already active from a prior visit
 
   buildLangSelector();
   initLanguage(); // saved pref → browser locale → English. No network calls.
@@ -2663,6 +3022,15 @@ function init(){
   document.getElementById('ab-pass-btn').addEventListener('click', ()=>{ hideAdBlockModal(); triggerStripeCheckout(); });
   document.getElementById('ab-video-btn').addEventListener('click', watchRewardedVideoPlaceholder);
   document.getElementById('ab-whitelist-btn').addEventListener('click', hideAdBlockModal);
+
+  // Rewarded video modal: confirm → simulated playing → success.
+  document.getElementById('rv-watch-btn').addEventListener('click', simulateRewardedVideoPlayback);
+  document.getElementById('rv-cancel-btn').addEventListener('click', hideRewardedVideoModal);
+  document.getElementById('rv-continue-btn').addEventListener('click', ()=>{
+    hideRewardedVideoModal();
+    hidePaywallModal();   // closes it if that's where the person came from
+    hideAdBlockModal();   // closes it if that's where the person came from instead
+  });
 
   // Contact modal: open from the footer link, close via backdrop click
   // or Escape (unlike the paywall/AdBlock modals, this one is meant to
