@@ -263,6 +263,15 @@ h1 em{ font-style:normal; color:var(--emerald); }
   background:var(--bg-elevated); border:1px solid rgba(23,201,137,.22); border-radius:var(--radius-md);
   padding:14px 20px; margin-bottom:14px;
   box-shadow:0 0 0 1px rgba(23,201,137,.04) inset;
+  transition:border-color .3s ease, background .3s ease, box-shadow .3s ease;
+}
+/* Beast Pass active state — deliberately distinct from the normal
+   green fuel-gauge look, so the panel itself signals "you're in
+   premium mode now" at a glance, not just the text inside it. */
+.meter-panel.pass-active{
+  background:linear-gradient(135deg, rgba(245,165,36,.10), var(--bg-elevated) 60%);
+  border-color:rgba(245,165,36,.45);
+  box-shadow:0 0 0 1px rgba(245,165,36,.06) inset, 0 0 24px -8px rgba(245,165,36,.35);
 }
 .meter-panel-left{ display:flex; align-items:center; gap:14px; }
 .meter-notches{ display:flex; gap:5px; }
@@ -270,13 +279,22 @@ h1 em{ font-style:normal; color:var(--emerald); }
 .notch.filled{ background:var(--emerald); box-shadow:0 0 10px rgba(23,201,137,.7); }
 .notch.filled.warn{ background:var(--amber); box-shadow:0 0 10px rgba(245,165,36,.7); }
 .notch.filled.danger{ background:var(--red); box-shadow:0 0 10px rgba(242,73,92,.7); }
+/* Pass-active notches pulse gently in amber instead of sitting static
+   green — a quiet "this is a premium, ticking-down state" cue. */
+.notch.pass-active{
+  background:var(--amber); box-shadow:0 0 12px rgba(245,165,36,.8);
+  animation:notch-pulse 2s ease-in-out infinite;
+}
+@keyframes notch-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.55; } }
 .meter-readout{
   font-family:var(--ff-mono); font-weight:700; font-size:1rem; color:#fff; letter-spacing:.01em;
 }
 .meter-readout span{ font-weight:400; color:var(--mist); text-transform:lowercase; }
+.meter-readout.pass-active{ color:var(--amber); }
 .meter-window{
   font-family:var(--ff-mono); font-size:.72rem; letter-spacing:.05em; color:var(--fog); text-transform:uppercase;
 }
+.meter-window.pass-active{ color:var(--amber); font-weight:700; }
 @media (max-width:560px){ .meter-panel{ flex-direction:column; align-items:flex-start; } }
 
 /* ================= DROP ZONE ================= */
@@ -580,7 +598,7 @@ footer{ border-top:var(--border-hair); margin-top:60px; padding:40px 0 24px; }
           </div>
           <span class="meter-readout" id="meter-readout">3/3 <span data-i18n="meter_label">conversions remaining</span></span>
         </div>
-        <span class="meter-window" data-i18n="meter_window">resets on a rolling 15-minute window</span>
+        <span class="meter-window" id="meter-window-text" data-i18n="meter_window">resets on a rolling 15-minute window</span>
       </div>
 
       <!-- ================= DROP ZONE ================= -->
@@ -861,7 +879,7 @@ const I18N = {
     nav_free:'Free',
     hero_title:'Convert files like a <em>beast.</em> Right in your browser.',
     hero_sub:'Images, PDFs and spreadsheets — converted instantly on your own device. No servers, no waiting rooms, no stranger touching your files.',
-    meter_label:'conversions remaining', meter_window:'resets on a rolling 15-minute window', meter_label_pass:'conversions — Beast Pass active',
+    meter_label:'conversions remaining', meter_window:'resets on a rolling 15-minute window', meter_label_pass:'conversions — Beast Pass active', meter_pass_expires:'Beast Pass expires in',
     drop_title:'Drag files here to unleash the beast',
     drop_sub:'or choose files from your device — they never leave it',
     drop_browse:'Browse files',
@@ -912,7 +930,7 @@ const I18N = {
     nav_free:'Gratis',
     hero_title:'Konverter filer som et <em>udyr.</em> Direkte i din browser.',
     hero_sub:'Billeder, PDF\'er og regneark — konverteret øjeblikkeligt på din egen enhed. Ingen servere, ingen ventetid, ingen fremmede der rører dine filer.',
-    meter_label:'konverteringer tilbage', meter_window:'nulstilles i et rullende 15-minutters vindue', meter_label_pass:'konverteringer — Beast Pass aktiv',
+    meter_label:'konverteringer tilbage', meter_window:'nulstilles i et rullende 15-minutters vindue', meter_label_pass:'konverteringer — Beast Pass aktiv', meter_pass_expires:'Beast Pass udløber om',
     drop_title:'Træk filer hertil for at udløse udyret',
     drop_sub:'eller vælg filer fra din enhed — de forlader den aldrig',
     drop_browse:'Vælg filer',
@@ -963,7 +981,7 @@ const I18N = {
     nav_free:'Gratis',
     hero_title:'Convierte archivos como una <em>bestia.</em> Directo en tu navegador.',
     hero_sub:'Imágenes, PDF y hojas de cálculo — convertidos al instante en tu propio dispositivo. Sin servidores, sin esperas.',
-    meter_label:'conversiones restantes', meter_window:'se reinicia en una ventana móvil de 15 minutos', meter_label_pass:'conversiones — Beast Pass activo',
+    meter_label:'conversiones restantes', meter_window:'se reinicia en una ventana móvil de 15 minutos', meter_label_pass:'conversiones — Beast Pass activo', meter_pass_expires:'El Beast Pass caduca en',
     drop_title:'Arrastra archivos aquí para liberar a la bestia',
     drop_sub:'o elige archivos desde tu dispositivo — nunca lo abandonan',
     drop_browse:'Elegir archivos',
@@ -1010,7 +1028,7 @@ const I18N = {
     nav_free:'Kostenlos',
     hero_title:'Dateien konvertieren wie ein <em>Biest.</em> Direkt im Browser.',
     hero_sub:'Bilder, PDFs und Tabellen — sofort auf Ihrem eigenen Gerät konvertiert. Keine Server, keine Wartezeit.',
-    meter_label:'Umwandlungen übrig', meter_window:'setzt sich in einem rollierenden 15-Minuten-Fenster zurück', meter_label_pass:'Umwandlungen — Beast Pass aktiv',
+    meter_label:'Umwandlungen übrig', meter_window:'setzt sich in einem rollierenden 15-Minuten-Fenster zurück', meter_label_pass:'Umwandlungen — Beast Pass aktiv', meter_pass_expires:'Beast Pass läuft ab in',
     drop_title:'Dateien hierher ziehen, um das Biest loszulassen',
     drop_sub:'oder Dateien von Ihrem Gerät auswählen — sie verlassen es nie',
     drop_browse:'Dateien auswählen',
@@ -1057,7 +1075,7 @@ const I18N = {
     nav_free:'Gratuit',
     hero_title:'Convertissez vos fichiers comme une <em>bête.</em> Directement dans votre navigateur.',
     hero_sub:'Images, PDF et tableurs — convertis instantanément sur votre appareil. Aucun serveur, aucune attente.',
-    meter_label:'conversions restantes', meter_window:'se réinitialise sur une fenêtre glissante de 15 minutes', meter_label_pass:'conversions — Beast Pass actif',
+    meter_label:'conversions restantes', meter_window:'se réinitialise sur une fenêtre glissante de 15 minutes', meter_label_pass:'conversions — Beast Pass actif', meter_pass_expires:'Le Beast Pass expire dans',
     drop_title:'Glissez vos fichiers ici pour libérer la bête',
     drop_sub:'ou choisissez des fichiers depuis votre appareil — ils ne le quittent jamais',
     drop_browse:'Choisir des fichiers',
@@ -1104,7 +1122,7 @@ const I18N = {
     nav_free:'मुफ़्त',
     hero_title:'फ़ाइलों को <em>बीस्ट</em> की तरह बदलें। सीधे आपके ब्राउज़र में।',
     hero_sub:'इमेज, PDF और स्प्रेडशीट — आपकी अपनी डिवाइस पर तुरंत कन्वर्ट। कोई सर्वर नहीं, कोई इंतज़ार नहीं।',
-    meter_label:'कन्वर्ज़न शेष', meter_window:'15-मिनट की रोलिंग विंडो पर रीसेट होता है', meter_label_pass:'कन्वर्ज़न — बीस्ट पास सक्रिय',
+    meter_label:'कन्वर्ज़न शेष', meter_window:'15-मिनट की रोलिंग विंडो पर रीसेट होता है', meter_label_pass:'कन्वर्ज़न — बीस्ट पास सक्रिय', meter_pass_expires:'बीस्ट पास समाप्त होगा',
     drop_title:'बीस्ट को जगाने के लिए फ़ाइलें यहाँ खींचें',
     drop_sub:'या अपनी डिवाइस से फ़ाइलें चुनें — वे कभी नहीं छोड़तीं',
     drop_browse:'फ़ाइलें चुनें',
@@ -1151,7 +1169,7 @@ const I18N = {
     nav_free:'مفت',
     hero_title:'فائلوں کو <em>بیسٹ</em> کی طرح تبدیل کریں۔ براہ راست آپ کے براؤزر میں۔',
     hero_sub:'تصاویر، PDF اور اسپریڈ شیٹس — آپ کے اپنے ڈیوائس پر فوری طور پر تبدیل۔ کوئی سرور نہیں، کوئی انتظار نہیں۔',
-    meter_label:'باقی تبدیلیاں', meter_window:'15 منٹ کی رولنگ ونڈو پر ری سیٹ ہوتا ہے', meter_label_pass:'تبدیلیاں — بیسٹ پاس فعال',
+    meter_label:'باقی تبدیلیاں', meter_window:'15 منٹ کی رولنگ ونڈو پر ری سیٹ ہوتا ہے', meter_label_pass:'تبدیلیاں — بیسٹ پاس فعال', meter_pass_expires:'بیسٹ پاس ختم ہوگا',
     drop_title:'بیسٹ کو جگانے کے لیے فائلیں یہاں گھسیٹیں',
     drop_sub:'یا اپنی ڈیوائس سے فائلیں منتخب کریں — وہ کبھی نہیں چھوڑتیں',
     drop_browse:'فائلیں منتخب کریں',
@@ -1198,7 +1216,7 @@ const I18N = {
     nav_free:'مجاني',
     hero_title:'حوّل ملفاتك مثل <em>الوحش.</em> مباشرة داخل متصفحك.',
     hero_sub:'صور وملفات PDF وجداول بيانات — تُحوَّل فورًا على جهازك الخاص. بلا خوادم، بلا انتظار.',
-    meter_label:'تحويلات متبقية', meter_window:'يُعاد الضبط ضمن نافذة متجددة مدتها 15 دقيقة', meter_label_pass:'تحويلات — بطاقة الوحش نشطة',
+    meter_label:'تحويلات متبقية', meter_window:'يُعاد الضبط ضمن نافذة متجددة مدتها 15 دقيقة', meter_label_pass:'تحويلات — بطاقة الوحش نشطة', meter_pass_expires:'تنتهي بطاقة الوحش خلال',
     drop_title:'اسحب الملفات هنا لإطلاق الوحش',
     drop_sub:'أو اختر ملفات من جهازك — لن تغادره أبدًا',
     drop_browse:'اختر الملفات',
@@ -1245,7 +1263,7 @@ const I18N = {
     nav_free:'免费',
     hero_title:'像<em>猛兽</em>一样转换文件。就在你的浏览器中。',
     hero_sub:'图片、PDF 和表格 — 在你自己的设备上即时转换。没有服务器，没有等待。',
-    meter_label:'剩余转换次数', meter_window:'在滚动的15分钟窗口内重置', meter_label_pass:'次转换 — 猛兽通行证已激活',
+    meter_label:'剩余转换次数', meter_window:'在滚动的15分钟窗口内重置', meter_label_pass:'次转换 — 猛兽通行证已激活', meter_pass_expires:'猛兽通行证将在以下时间后到期',
     drop_title:'将文件拖到此处，释放猛兽',
     drop_sub:'或从你的设备选择文件 — 它们永不离开',
     drop_browse:'选择文件',
@@ -1292,7 +1310,7 @@ const I18N = {
     nav_free:'免費',
     hero_title:'將檔案轉換得好似<em>猛獸</em>一樣。直接喺你嘅瀏覽器入面。',
     hero_sub:'圖片、PDF同試算表 — 喺你自己部裝置即時轉換。冇伺服器，唔使等。',
-    meter_label:'剩返嘅轉換次數', meter_window:'喺15分鐘嘅滾動時段內重置', meter_label_pass:'次轉換 — 猛獸通行證已啟用',
+    meter_label:'剩返嘅轉換次數', meter_window:'喺15分鐘嘅滾動時段內重置', meter_label_pass:'次轉換 — 猛獸通行證已啟用', meter_pass_expires:'猛獸通行證將喺以下時間後到期',
     drop_title:'將檔案拖到呢度，釋放猛獸',
     drop_sub:'或者喺你部裝置揀檔案 — 永遠唔會離開佢',
     drop_browse:'揀檔案',
@@ -1339,7 +1357,7 @@ const I18N = {
     nav_free:'Grátis',
     hero_title:'Converta arquivos como uma <em>fera.</em> Direto no seu navegador.',
     hero_sub:'Imagens, PDFs e planilhas — convertidos instantaneamente no seu próprio dispositivo. Sem servidores, sem espera.',
-    meter_label:'conversões restantes', meter_window:'reinicia em uma janela contínua de 15 minutos', meter_label_pass:'conversões — Beast Pass ativo',
+    meter_label:'conversões restantes', meter_window:'reinicia em uma janela contínua de 15 minutos', meter_label_pass:'conversões — Beast Pass ativo', meter_pass_expires:'O Beast Pass expira em',
     drop_title:'Arraste arquivos aqui para soltar a fera',
     drop_sub:'ou escolha arquivos do seu dispositivo — eles nunca o deixam',
     drop_browse:'Escolher arquivos',
@@ -1386,7 +1404,7 @@ const I18N = {
     nav_free:'Miễn phí',
     hero_title:'Chuyển đổi tệp như một <em>quái thú.</em> Ngay trong trình duyệt của bạn.',
     hero_sub:'Hình ảnh, PDF và bảng tính — được chuyển đổi tức thì trên chính thiết bị của bạn. Không máy chủ, không chờ đợi.',
-    meter_label:'lượt chuyển đổi còn lại', meter_window:'đặt lại theo cửa sổ trượt 15 phút', meter_label_pass:'lượt chuyển đổi — Beast Pass đang hoạt động',
+    meter_label:'lượt chuyển đổi còn lại', meter_window:'đặt lại theo cửa sổ trượt 15 phút', meter_label_pass:'lượt chuyển đổi — Beast Pass đang hoạt động', meter_pass_expires:'Beast Pass hết hạn sau',
     drop_title:'Kéo tệp vào đây để giải phóng quái thú',
     drop_sub:'hoặc chọn tệp từ thiết bị của bạn — chúng không bao giờ rời khỏi đó',
     drop_browse:'Chọn tệp',
@@ -1433,7 +1451,7 @@ const I18N = {
     nav_free:'Gratis',
     hero_title:'Ubah file seperti <em>monster.</em> Langsung di browser Anda.',
     hero_sub:'Gambar, PDF, dan spreadsheet — dikonversi secara instan di perangkat Anda sendiri. Tanpa server, tanpa menunggu.',
-    meter_label:'konversi tersisa', meter_window:'diatur ulang dalam jendela bergulir 15 menit', meter_label_pass:'konversi — Beast Pass aktif',
+    meter_label:'konversi tersisa', meter_window:'diatur ulang dalam jendela bergulir 15 menit', meter_label_pass:'konversi — Beast Pass aktif', meter_pass_expires:'Beast Pass berakhir dalam',
     drop_title:'Seret file ke sini untuk melepaskan sang monster',
     drop_sub:'atau pilih file dari perangkat Anda — file tidak pernah meninggalkannya',
     drop_browse:'Pilih file',
@@ -1757,24 +1775,76 @@ function updateAdVisibility(){
 /* Renders the "cockpit gauge" readout above the drop zone:
    3 notches + a JetBrains Mono technical readout string, e.g.
    "3/3 conversions remaining" with the rolling-window caption beneath it. */
+let passExpiryInterval = null;
+
 function renderMeter(){
   const remaining = remainingConversions();
   const notches = document.querySelectorAll('#meter-notches .notch');
   const readout = document.getElementById('meter-readout');
+  const panel = document.getElementById('meter-panel');
+  const windowEl = document.getElementById('meter-window-text');
 
   if(remaining === Infinity){
-    notches.forEach(n=>{ n.classList.add('filled'); n.classList.remove('warn','danger'); });
+    // Beast Pass active — distinct "premium" visual state, and a real
+    // live countdown to expiry instead of the normal free-tier caption.
+    notches.forEach(n=>{
+      n.classList.add('filled', 'pass-active');
+      n.classList.remove('warn','danger');
+    });
+    readout.classList.add('pass-active');
     readout.innerHTML = `∞ <span data-i18n="meter_label_pass">${t('meter_label_pass')}</span>`;
+    panel.classList.add('pass-active');
+    windowEl.classList.add('pass-active');
+    startPassExpiryCountdown();
     return;
   }
+
+  // Not on a pass — normal free-tier look, and make sure any leftover
+  // pass-active styling/countdown from a just-expired pass is cleared.
+  if(passExpiryInterval){ clearInterval(passExpiryInterval); passExpiryInterval = null; }
+  panel.classList.remove('pass-active');
+  readout.classList.remove('pass-active');
+  windowEl.classList.remove('pass-active');
+  windowEl.textContent = t('meter_window');
+
   notches.forEach((n, i)=>{
     const filled = i < remaining;
     n.classList.toggle('filled', filled);
-    n.classList.remove('warn','danger');
+    n.classList.remove('warn','danger','pass-active');
     if(filled && remaining === 1) n.classList.add('danger');
     else if(filled && remaining === 2) n.classList.add('warn');
   });
   readout.innerHTML = `${remaining}/${FREE_LIMIT} <span data-i18n="meter_label">${t('meter_label')}</span>`;
+}
+
+/* Live countdown to Beast Pass expiry, shown in place of the normal
+   "resets on a rolling 15-minute window" caption. Ticks every second;
+   stops and hands back to the normal free-tier render the instant the
+   pass actually expires, so the UI never gets stuck showing "00:00:00"
+   or a stale "Beast Pass active" state after time's up. */
+function startPassExpiryCountdown(){
+  if(passExpiryInterval) return; // already running
+  const windowEl = document.getElementById('meter-window-text');
+
+  function tick(){
+    const expiry = Number(localStorage.getItem('bc_pass_expiry') || 0);
+    const msLeft = expiry - Date.now();
+    if(msLeft <= 0){
+      clearInterval(passExpiryInterval); passExpiryInterval = null;
+      beastPassActive = false;
+      renderMeter(); // falls through to the normal free-tier state above
+      refreshConvertButtonState();
+      updateAdVisibility();
+      return;
+    }
+    const totalSeconds = Math.floor(msLeft / 1000);
+    const hh = String(Math.floor(totalSeconds / 3600)).padStart(2,'0');
+    const mm = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2,'0');
+    const ss = String(totalSeconds % 60).padStart(2,'0');
+    windowEl.textContent = `${t('meter_pass_expires')} ${hh}:${mm}:${ss}`;
+  }
+  tick();
+  passExpiryInterval = setInterval(tick, 1000);
 }
 
 function refreshConvertButtonState(){
@@ -2468,8 +2538,7 @@ function renderResults(results){
 // this. Get it from https://dashboard.stripe.com/apikeys (use the
 // pk_test_... key while developing, pk_live_... only once you're ready
 // to take real payments).
-const STRIPE_PUBLISHABLE_KEY = 'pk_test_51Tojub1Q1WEoih3D3SrAJSILhhAbkpT4Ad22izadeloSX1lpPqvdBBjwSjKkoSgTqFUUKj8f2jleOUw8XqjIryzM00EMe1OF5n'; // PLACEHOLDER
-
+const const STRIPE_PUBLISHABLE_KEY = 'pk_test_51Tojub1Q1WEoih3D3SrAJSILhhAbkpT4Ad22izadeloSX1lpPqvdBBjwSjKkoSgTqFUUKj8f2jleOUw8XqjIryzM00EMe1OF5n'; // PLACEHOLDER
 // The backend endpoint that creates a Checkout Session (see
 // stripe-backend-example.js). Until this points at a real, deployed
 // endpoint, checkout falls back to DEMO_MODE below rather than failing
