@@ -100,7 +100,7 @@
 <!-- New for this update: PDF to Word, Word to PDF, PDF to Text, Compress PDF -->
 <!-- NOTE: docx (used for PDF-to-Word) is loaded via dynamic import() inside
      pdf2word() instead of a <script> tag here — see that function for why. -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth.js/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <!-- Stripe.js — required for redirectToCheckout(). This is Stripe's own
      script, loaded from Stripe's CDN; it never has access to your
@@ -2108,10 +2108,25 @@ const Converters = {
     const { PDFDocument } = PDFLib;
     const pdfDoc = await PDFDocument.create();
     for(const {file} of files){
-      const bytes = new Uint8Array(await file.arrayBuffer());
+      let bytes = new Uint8Array(await file.arrayBuffer());
       let embedded;
-      if(/png/i.test(file.type)) embedded = await pdfDoc.embedPng(bytes);
-      else embedded = await pdfDoc.embedJpg(bytes); // jpg/jpeg; webp/others should be pre-converted
+      if(/png/i.test(file.type)){
+        embedded = await pdfDoc.embedPng(bytes);
+      } else if(/webp/i.test(file.type)){
+        // pdf-lib has no embedWebp() — it only understands PNG and JPEG.
+        // Convert WebP to PNG via canvas first (this tool's accepted
+        // formats list includes .webp, so this path has to work, not
+        // just fall through to the JPEG branch, which would throw).
+        const img = await loadImageFromFile(file);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width; canvas.height = img.height;
+        canvas.getContext('2d').drawImage(img, 0, 0);
+        const pngBlob = await canvasToBlob(canvas, 'image/png');
+        bytes = new Uint8Array(await pngBlob.arrayBuffer());
+        embedded = await pdfDoc.embedPng(bytes);
+      } else {
+        embedded = await pdfDoc.embedJpg(bytes); // jpg/jpeg
+      }
       const page = pdfDoc.addPage([embedded.width, embedded.height]);
       page.drawImage(embedded, { x:0, y:0, width:embedded.width, height:embedded.height });
     }
@@ -2199,10 +2214,13 @@ const Converters = {
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
     // docx is an ES module — loaded here via dynamic import() rather than a
     // <script> tag, because a plain script tag doesn't reliably expose a
-    // window.docx global for this package (it's built for `import` usage,
-    // not old-style UMD globals). This fetches it once per conversion; the
-    // browser caches the module after the first successful import.
-    const docxLib = await import('https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.js');
+    // window.docx global for this package. The /+esm suffix is jsDelivr's
+    // dedicated endpoint for exactly this: it pre-bundles the package (and
+    // resolves its internal imports) into a single browser-ready ES module,
+    // which the raw /build/index.js file is NOT — that's what caused the
+    // "Failed to fetch dynamically imported module" error on the first fix
+    // attempt. The browser caches the module after the first successful import.
+    const docxLib = await import('https://cdn.jsdelivr.net/npm/docx@8.5.0/+esm');
     const { Document, Packer, Paragraph, TextRun } = docxLib;
     const results = [];
     for(const {file} of files){
