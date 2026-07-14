@@ -326,6 +326,17 @@ h1 em{ font-style:normal; color:var(--emerald); }
     repeating-linear-gradient(115deg, transparent 0 60px, rgba(23,201,137,.08) 60px 63px, transparent 63px 130px);
 }
 .dropzone.drag-over{ border-color:var(--emerald); background:rgba(23,201,137,.05); }
+
+/* The wrapper around dropzone + tool grid — see the HTML comment at
+   its opening tag for why it exists. A light full-area highlight so
+   there's feedback wherever in the larger area you're dragging over,
+   distinct from (and in addition to) the small dropzone box's own
+   tighter highlight above. */
+.drop-catch-area{ border-radius:var(--radius-lg); transition:box-shadow .2s ease, background .2s ease; }
+.drop-catch-area.drag-over-wide{
+  box-shadow:0 0 0 2px rgba(23,201,137,.3) inset;
+  background:rgba(23,201,137,.02);
+}
 .dropzone.disabled{ opacity:.5; pointer-events:none; }
 
 .drop-icon{
@@ -347,6 +358,11 @@ h1 em{ font-style:normal; color:var(--emerald); }
 .drop-formats{ margin-top:20px; font-family:var(--ff-mono); font-size:.72rem; color:var(--fog); letter-spacing:.03em; }
 
 /* file list */
+.file-list-tool-label{
+  margin-top:20px; margin-bottom:-4px; text-align:left; font-family:var(--ff-mono); font-size:.78rem;
+  color:var(--emerald); letter-spacing:.02em;
+}
+[dir="rtl"] .file-list-tool-label{ text-align:right; }
 .file-list{ margin-top:22px; display:flex; flex-direction:column; gap:10px; text-align:left; }
 [dir="rtl"] .file-list{ text-align:right; }
 .file-row{
@@ -385,7 +401,19 @@ h1 em{ font-style:normal; color:var(--emerald); }
 /* --tool-color is set inline per card in JS so hover/active states pick up
    each tool's own accent rather than one uniform color across the grid. */
 .tool-card:hover{ transform:translateY(-4px); border-color:var(--tool-color, var(--emerald)); }
-.tool-card.active{ border-color:var(--tool-color, var(--emerald)); box-shadow:0 0 0 3px color-mix(in srgb, var(--tool-color, var(--emerald)) 22%, transparent), var(--shadow-card); }
+.tool-card.active{
+  border-color:var(--tool-color, var(--emerald));
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--tool-color, var(--emerald)) 30%, transparent), 0 0 24px -6px color-mix(in srgb, var(--tool-color, var(--emerald)) 55%, transparent), var(--shadow-card);
+  transform:translateY(-3px);
+}
+.tool-card.active::after{
+  content:'✓'; position:absolute; bottom:14px; right:14px;
+  width:22px; height:22px; border-radius:50%;
+  background:var(--tool-color, var(--emerald)); color:#06231A;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.72rem; font-weight:700; box-shadow:0 2px 8px -2px rgba(0,0,0,.4);
+}
+[dir="rtl"] .tool-card.active::after{ right:auto; left:14px; }
 .tool-icon{
   width:42px; height:42px; border-radius:11px;
   display:flex; align-items:center; justify-content:center;
@@ -437,6 +465,10 @@ h1 em{ font-style:normal; color:var(--emerald); }
 }
 .convert-bar .summary{ font-family:var(--ff-mono); font-size:.82rem; color:var(--fog); }
 .convert-bar .summary b{ color:#fff; }
+.convert-bar .summary #bar-tool-name{
+  color:var(--emerald); background:rgba(23,201,137,.14); border:1px solid rgba(23,201,137,.35);
+  padding:2px 9px; border-radius:6px; font-weight:700;
+}
 .convert-btn{
   background:var(--emerald); color:#06231A; font-weight:700; font-size:.94rem;
   padding:14px 30px; border-radius:var(--radius-sm); display:flex; align-items:center; gap:10px;
@@ -635,6 +667,18 @@ footer{ border-top:var(--border-hair); margin-top:60px; padding:40px 0 24px; }
       </div>
 
       <!-- ================= DROP ZONE ================= -->
+      <!-- ============================================================
+           DROP-CATCH AREA — wraps both the dropzone box AND the tool
+           grid below it. Drag events are handled on THIS whole wrapper
+           (see setupDropzone() in the script), not just the small
+           dropzone box, so once a tool is selected you can drop a file
+           anywhere over the tool cards too, without scrolling back up
+           to the small box specifically. The small box still gets its
+           own tighter visual highlight; the wrapper gets a lighter
+           full-area highlight so there's feedback wherever you are.
+           ============================================================ -->
+      <div class="drop-catch-area" id="drop-catch-area">
+
       <section class="dropzone-region">
         <div class="dropzone" id="dropzone">
           <div class="drop-icon">
@@ -649,6 +693,7 @@ footer{ border-top:var(--border-hair); margin-top:60px; padding:40px 0 24px; }
           <input type="file" id="file-input" multiple accept=".png,.jpg,.jpeg,.webp,.heic,.heif,.pdf,.csv,.docx,.xlsx">
           <div class="drop-formats" data-i18n="drop_formats">HEIC · PNG · JPG · WEBP · PDF · CSV — max 50MB per file</div>
 
+          <div class="file-list-tool-label" id="file-list-tool-label" style="display:none;"></div>
           <div class="file-list" id="file-list"></div>
         </div>
       </section>
@@ -712,6 +757,8 @@ footer{ border-top:var(--border-hair); margin-top:60px; padding:40px 0 24px; }
           </button>
         </div>
       </section>
+
+      </div><!-- /#drop-catch-area -->
 
       <!-- ================= RESULTS ================= -->
       <section class="results" id="results">
@@ -1968,6 +2015,7 @@ function selectTool(id){
   });
   document.getElementById('resize-options').style.display = (id === 'resizeimage') ? 'flex' : 'none';
   document.getElementById('rotate-options').style.display = (id === 'rotatepdf') ? 'flex' : 'none';
+  renderFileList(); // keeps the "Selected tool: X" label above the file list in sync
   updateBarSelection();
 }
 
@@ -2375,6 +2423,20 @@ function removeFile(id){
 
 function renderFileList(){
   const list = document.getElementById('file-list');
+  const toolLabel = document.getElementById('file-list-tool-label');
+
+  // Show which tool is selected right above the file list — a direct
+  // answer to "if you tend to have doubts, it's good to see it there
+  // too", so the tool choice is visible right next to the files, not
+  // only in the convert bar further down.
+  if(queuedFiles.length > 0){
+    const tool = TOOLS.find(x=>x.id===selectedTool);
+    toolLabel.textContent = `${t('bar_selected')}: ${tool ? t(tool.nameKey) : t('bar_none')}`;
+    toolLabel.style.display = 'block';
+  } else {
+    toolLabel.style.display = 'none';
+  }
+
   list.innerHTML = '';
   queuedFiles.forEach(entry=>{
     const row = document.createElement('div');
@@ -2395,15 +2457,29 @@ function renderFileList(){
 
 function setupDropzone(){
   const zone = document.getElementById('dropzone');
+  const wideArea = document.getElementById('drop-catch-area');
   const input = document.getElementById('file-input');
 
+  // The small box gets its own tighter highlight; the whole wrapper
+  // (dropzone + tool grid) gets a lighter full-area highlight and is
+  // ALSO a valid drop target — see the HTML comment on #drop-catch-area
+  // for why: dropping a file shouldn't require scrolling back up to
+  // the small box once you've selected a tool further down the page.
   ;['dragenter','dragover'].forEach(evt=>{
-    zone.addEventListener(evt, e=>{ e.preventDefault(); zone.classList.add('drag-over'); });
+    wideArea.addEventListener(evt, e=>{
+      e.preventDefault();
+      wideArea.classList.add('drag-over-wide');
+      if(e.target === zone || zone.contains(e.target)) zone.classList.add('drag-over');
+    });
   });
   ;['dragleave','drop'].forEach(evt=>{
-    zone.addEventListener(evt, e=>{ e.preventDefault(); zone.classList.remove('drag-over'); });
+    wideArea.addEventListener(evt, e=>{
+      e.preventDefault();
+      wideArea.classList.remove('drag-over-wide');
+      zone.classList.remove('drag-over');
+    });
   });
-  zone.addEventListener('drop', e=>{
+  wideArea.addEventListener('drop', e=>{
     if(zone.classList.contains('disabled')) return;
     if(e.dataTransfer?.files?.length) addFiles(e.dataTransfer.files);
   });
