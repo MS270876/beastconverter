@@ -2125,13 +2125,13 @@ function renderResults(results){
 // this. Get it from https://dashboard.stripe.com/apikeys (use the
 // pk_test_... key while developing, pk_live_... only once you're ready
 // to take real payments).
-const STRIPE_PUBLISHABLE_KEY = 'pk_test_51Tojub1Q1WEoih3D3SrAJSILhhAbkpT4Ad22izadeloSX1lpPqvdBBjwSjKkoSgTqFUUKj8f2jleOUw8XqjIryzM00EMe1OF5n'; // PLACEHOLDER
+const STRIPE_PUBLISHABLE_KEY = 'pk_test_YOUR_PUBLISHABLE_KEY_HERE'; // PLACEHOLDER
 
 // The backend endpoint that creates a Checkout Session (see
 // stripe-backend-example.js). Until this points at a real, deployed
 // endpoint, checkout falls back to DEMO_MODE below rather than failing
 // silently on your users.
-const CHECKOUT_SESSION_ENDPOINT = 'https://beastconverter-backend.onrender.com/api/create-checkout-session'; // PLACEHOLDER — point at your real backend
+const CHECKOUT_SESSION_ENDPOINT = '/api/create-checkout-session'; // PLACEHOLDER — point at your real backend
 /* ====================================================== */
 
 let stripeClient = null;
