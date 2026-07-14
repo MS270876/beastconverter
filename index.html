@@ -421,7 +421,13 @@ h1 em{ font-style:normal; color:var(--emerald); }
   width:100px; padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,.18);
   background:var(--bg-inset); color:#fff; font-family:var(--ff-mono); font-size:.9rem;
 }
-.resize-options .resize-hint{ color:var(--fog); font-size:.78rem; }
+.resize-options input[type="number"]:disabled{ opacity:.4; cursor:not-allowed; }
+.resize-options .resize-unit{ color:var(--fog); font-size:.8rem; margin-left:-4px; }
+.resize-options .resize-checkbox-label{
+  display:flex; align-items:center; gap:6px; margin-left:16px; cursor:pointer; color:var(--mist);
+}
+.resize-options .resize-checkbox-label input[type="checkbox"]{ width:15px; height:15px; accent-color:var(--emerald); cursor:pointer; }
+.resize-options .resize-hint{ color:var(--fog); font-size:.78rem; flex-basis:100%; }
 
 .convert-bar{
   position:sticky; bottom:0; z-index:40; margin-top:30px;
@@ -669,7 +675,18 @@ footer{ border-top:var(--border-hair); margin-top:60px; padding:40px 0 24px; }
         <div class="resize-options" id="resize-options" style="display:none;">
           <label for="resize-width-input" data-i18n="resize_width_label">Target width</label>
           <input type="number" id="resize-width-input" value="1024" min="16" max="8000" step="1">
-          <span class="resize-hint" data-i18n="resize_width_hint">px — height scales automatically to match</span>
+          <span class="resize-unit">px</span>
+
+          <label for="resize-height-input" data-i18n="resize_height_label" style="margin-left:14px;">Target height</label>
+          <input type="number" id="resize-height-input" value="768" min="16" max="8000" step="1" disabled>
+          <span class="resize-unit">px</span>
+
+          <label class="resize-checkbox-label">
+            <input type="checkbox" id="resize-keep-ratio" checked>
+            <span data-i18n="resize_keep_ratio_label">Keep aspect ratio</span>
+          </label>
+
+          <span class="resize-hint" id="resize-hint-text" data-i18n="resize_keep_ratio_hint">Uncheck to set an exact height too — this may stretch or squash images that don't match this ratio.</span>
         </div>
 
         <!-- ================= ROTATE OPTIONS ================= -->
@@ -2411,13 +2428,36 @@ function loadImageFromFile(file){
   return new Promise((resolve, reject)=>{
     const img = new Image();
     img.onload = ()=> resolve(img);
-    img.onerror = reject;
+    // The browser calls onerror with a raw Event object, not an Error —
+    // that Event has no .message, so it was propagating all the way up
+    // to the console as an unhelpful "Conversion failed: Event" with no
+    // explanation. Wrapping it in a real Error with the filename and the
+    // most likely cause fixes that for good.
+    img.onerror = ()=> reject(new Error(
+      `Could not load "${file.name}" as an image. Most browsers can't display HEIC files directly (that's why HEIC to JPG is its own separate tool) — if this is a HEIC file, use that tool instead. Otherwise the file may be corrupted or in an unsupported format.`
+    ));
     img.src = URL.createObjectURL(file);
   });
 }
 
 function canvasToBlob(canvas, type, quality){
   return new Promise(resolve=> canvas.toBlob(resolve, type, quality));
+}
+
+/* Detects whether a file is PNG/WebP/JPEG using BOTH its MIME type
+   (file.type) AND its filename extension, falling back to the
+   extension whenever the MIME type is empty or unreliable — some
+   browsers/OSes/drag-and-drop sources don't set file.type correctly,
+   which was silently mis-routing files (e.g. a real PNG with no
+   MIME type falling into the JPEG branch and pdf-lib rejecting it
+   outright, since PNG bytes aren't valid JPEG). Returns 'png',
+   'webp', or 'jpeg' (the default/fallback). */
+function detectImageKind(file){
+  const type = (file.type || '').toLowerCase();
+  const name = (file.name || '').toLowerCase();
+  if(type.includes('png') || name.endsWith('.png')) return 'png';
+  if(type.includes('webp') || name.endsWith('.webp')) return 'webp';
+  return 'jpeg';
 }
 
 const Converters = {
@@ -2469,25 +2509,20 @@ const Converters = {
     const { PDFDocument } = PDFLib;
     const pdfDoc = await PDFDocument.create();
     for(const {file} of files){
-      let bytes = new Uint8Array(await file.arrayBuffer());
-      let embedded;
-      if(/png/i.test(file.type)){
-        embedded = await pdfDoc.embedPng(bytes);
-      } else if(/webp/i.test(file.type)){
-        // pdf-lib has no embedWebp() — it only understands PNG and JPEG.
-        // Convert WebP to PNG via canvas first (this tool's accepted
-        // formats list includes .webp, so this path has to work, not
-        // just fall through to the JPEG branch, which would throw).
-        const img = await loadImageFromFile(file);
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width; canvas.height = img.height;
-        canvas.getContext('2d').drawImage(img, 0, 0);
-        const pngBlob = await canvasToBlob(canvas, 'image/png');
-        bytes = new Uint8Array(await pngBlob.arrayBuffer());
-        embedded = await pdfDoc.embedPng(bytes);
-      } else {
-        embedded = await pdfDoc.embedJpg(bytes); // jpg/jpeg
-      }
+      // Always decode via the browser's own <img> element (canvas) rather
+      // than branching on detected type and handing raw bytes straight to
+      // pdf-lib's embedPng/embedJpg — those are strict about exact byte
+      // structure and threw "SOI not found in JPEG" on files the browser
+      // itself could decode just fine. The browser's decoder is far more
+      // forgiving and handles PNG/JPEG/WebP uniformly; we always embed the
+      // canvas output as PNG, so there's only one code path, not three.
+      const img = await loadImageFromFile(file);
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width; canvas.height = img.height;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      const pngBlob = await canvasToBlob(canvas, 'image/png');
+      const bytes = new Uint8Array(await pngBlob.arrayBuffer());
+      const embedded = await pdfDoc.embedPng(bytes);
       const page = pdfDoc.addPage([embedded.width, embedded.height]);
       page.drawImage(embedded, { x:0, y:0, width:embedded.width, height:embedded.height });
     }
@@ -2716,24 +2751,46 @@ const Converters = {
   },
 
   /* Resize Image via canvas — pure browser primitive, no library needed.
-     Takes a single target WIDTH (from #resize-width-input) and scales
-     each queued image proportionally, computing its own height from
-     its own original aspect ratio. Deliberately width-only rather than
-     width+height: with multiple files of different original sizes in
-     one batch, one target width is far more usable than asking for an
-     exact width+height pair that would distort every file except one. */
+     Two modes, controlled by the #resize-keep-ratio checkbox:
+       - CHECKED (default): only the width field is used; height is
+         computed per-file from that file's own original aspect ratio.
+         Safe default — never distorts an image.
+       - UNCHECKED: both width AND height fields are used exactly as
+         typed, for every queued file. This CAN stretch or squash
+         images whose original proportions don't match the chosen
+         width:height pair — that's an expected trade-off of asking
+         for an exact size, not a bug, and is disclosed in the UI copy
+         next to the checkbox. */
   async resizeimage(files){
-    const rawWidth = parseInt(document.getElementById('resize-width-input').value, 10);
+    const widthEl = document.getElementById('resize-width-input');
+    const heightEl = document.getElementById('resize-height-input');
+    const keepRatio = document.getElementById('resize-keep-ratio').checked;
+
+    const rawWidth = parseInt(widthEl.value, 10);
     const targetWidth = Math.max(16, Math.min(8000, isNaN(rawWidth) ? 1024 : rawWidth));
+    const rawHeight = parseInt(heightEl.value, 10);
+    const manualHeight = Math.max(16, Math.min(8000, isNaN(rawHeight) ? 768 : rawHeight));
+
     const results = [];
     for(const {file} of files){
       const img = await loadImageFromFile(file);
-      const scale = targetWidth / img.width;
-      const targetHeight = Math.max(1, Math.round(img.height * scale));
+      if(!img.width || !img.height){
+        throw new Error(`Could not read image dimensions for "${file.name}" — the file may be corrupted or in an unsupported format.`);
+      }
+
+      let outWidth, outHeight;
+      if(keepRatio){
+        outWidth = targetWidth;
+        outHeight = Math.max(1, Math.round(img.height * (targetWidth / img.width)));
+      } else {
+        outWidth = targetWidth;
+        outHeight = manualHeight; // exact — may distort, by design when unchecked
+      }
+
       const canvas = document.createElement('canvas');
-      canvas.width = targetWidth; canvas.height = targetHeight;
-      canvas.getContext('2d').drawImage(img, 0, 0, targetWidth, targetHeight);
-      const outIsPng = /png/i.test(file.type);
+      canvas.width = outWidth; canvas.height = outHeight;
+      canvas.getContext('2d').drawImage(img, 0, 0, outWidth, outHeight);
+      const outIsPng = detectImageKind(file) === 'png';
       const blob = await canvasToBlob(canvas, outIsPng ? 'image/png' : 'image/jpeg', 0.92);
       const ext = outIsPng ? '.png' : '.jpg';
       results.push(downloadResult(file.name.replace(/\.[^.]+$/, '') + '-resized' + ext, blob));
@@ -2783,6 +2840,80 @@ const Converters = {
   },
 };
 
+/* ---------------------------------------------------------------
+   FILE SIGNATURE VALIDATION
+   Reads the first few bytes of a file and checks them against the
+   real, well-known "magic number" every format starts with — this
+   is checking the file's ACTUAL content, not its extension or MIME
+   type (both of which can be wrong or missing). This exists because
+   testing revealed a recurring pattern: PDF tools failing with "No
+   PDF header found", Word to PDF failing with "not a zip file", and
+   Images to PDF failing with "SOI not found in JPEG" are all the
+   exact same underlying problem — a file was tried against a tool
+   expecting a different format than what the file actually is.
+   Catching that HERE, before any parsing library even runs, turns a
+   cryptic library crash into an immediate, specific, friendly
+   message — and it's the same check regardless of which tool.
+   --------------------------------------------------------------- */
+function readFileSignatureBytes(file, numBytes){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=> resolve(new Uint8Array(reader.result));
+    reader.onerror = ()=> reject(new Error('Could not read file'));
+    reader.readAsArrayBuffer(file.slice(0, numBytes));
+  });
+}
+
+function bytesStartWith(bytes, ...expected){
+  return expected.every((b, i)=> bytes[i] === b);
+}
+
+/* Maps each tool to the format its input file must actually be, and
+   how to recognize that format from its first bytes. 'text' formats
+   (CSV) have no reliable magic number, so they're only checked
+   against being ACCIDENTALLY a binary format someone mis-selected
+   (a very common real mistake), not validated as "definitely CSV". */
+const FILE_SIGNATURES = {
+  pdf: { bytes:4, check: b => bytesStartWith(b, 0x25,0x50,0x44,0x46), label:'a PDF' }, // %PDF
+  zip: { bytes:4, check: b => bytesStartWith(b, 0x50,0x4B) , label:'a Word (.docx) or Excel (.xlsx) file' }, // PK..
+  jpeg:{ bytes:3, check: b => bytesStartWith(b, 0xFF,0xD8,0xFF), label:'a JPEG image' },
+  png: { bytes:8, check: b => bytesStartWith(b, 0x89,0x50,0x4E,0x47,0x0D,0x0A,0x1A,0x0A), label:'a PNG image' },
+  webp:{ bytes:12, check: b => bytesStartWith(b, 0x52,0x49,0x46,0x46) && b[8]===0x57 && b[9]===0x45 && b[10]===0x42 && b[11]===0x50, label:'a WebP image' },
+};
+
+// Which signature each tool's file(s) must match. Tools not listed
+// here (CSV-based, or ones that already do their own robust format
+// sniffing like heic2jpg) skip this upfront check.
+const TOOL_EXPECTED_FORMAT = {
+  mergepdf:'pdf', splitpdf:'pdf', compresspdf:'pdf', rotatepdf:'pdf',
+  pdf2img:'pdf', pdf2word:'pdf', pdf2text:'pdf',
+  word2pdf:'zip', excel2csv:'zip',
+  img2pdf:'image', resizeimage:'image', // 'image' = PNG or JPEG or WebP, checked specially below
+};
+
+/* Returns null if the file matches what the tool expects, or a
+   specific, friendly error string if it doesn't. */
+async function validateFileSignature(file, toolId){
+  const expected = TOOL_EXPECTED_FORMAT[toolId];
+  if(!expected) return null; // this tool doesn't get this check
+
+  const bytes = await readFileSignatureBytes(file, 16);
+
+  if(expected === 'image'){
+    const isImage = FILE_SIGNATURES.jpeg.check(bytes) || FILE_SIGNATURES.png.check(bytes) || FILE_SIGNATURES.webp.check(bytes);
+    if(!isImage){
+      return `"${file.name}" doesn't look like a real PNG, JPEG, or WebP image — its content doesn't match any of those formats, regardless of its filename. Double-check this is the right file for this tool.`;
+    }
+    return null;
+  }
+
+  const sig = FILE_SIGNATURES[expected];
+  if(!sig.check(bytes)){
+    return `"${file.name}" doesn't look like ${sig.label} — its actual content doesn't start with the bytes a real ${sig.label} always has, regardless of its filename or extension. Double-check you've selected the right file for this tool.`;
+  }
+  return null;
+}
+
 async function runConversion(){
   // Note: the free-conversion gauge is spent at upload time (see addFiles()),
   // not here — this function only performs the actual client-side file
@@ -2792,6 +2923,17 @@ async function runConversion(){
 
   const fn = Converters[selectedTool];
   if(!fn){ console.error('No converter registered for tool:', selectedTool); return; }
+
+  // Check every queued file's ACTUAL content against what this tool
+  // needs, before attempting anything — see FILE SIGNATURE VALIDATION
+  // above for why this exists.
+  for(const entry of queuedFiles){
+    const problem = await validateFileSignature(entry.file, selectedTool);
+    if(problem){
+      alert(problem);
+      return; // stop here — don't even attempt the conversion
+    }
+  }
 
   queuedFiles.forEach(f=> f.status = 'working');
   renderFileList();
@@ -2820,10 +2962,18 @@ async function runConversion(){
      structurally valid, uncorrupted PDF.
    - heic2any explicitly refuses files that are already a browser-
      readable format (e.g. a .jpg someone tried to run through the
-     HEIC converter). */
+     HEIC converter).
+   - heic2any's underlying HEIC decoder (libheif) has a known, currently
+     UNRESOLVED open issue with HEIC files from newer iPhones (iPhone 15
+     Pro/Pro Max and later, iOS 18+) — confirmed against heic2any's own
+     GitHub issue tracker. This is not something fixable in our code;
+     it's a real limitation of the decoding library itself. */
 function explainConversionError(err, toolId){
   const msg = String(err && err.message || err);
 
+  if(/ERR_LIBHEIF/i.test(msg)){
+    return "This HEIC file uses a format variant our converter's decoder doesn't support yet — this affects photos from newer iPhones (iPhone 15 Pro and later, iOS 18+) specifically, and is a known open issue in the underlying library, not something wrong with your file. Workaround: on your iPhone, go to Settings → Camera → Formats and switch to \"Most Compatible\" — new photos will save as JPG directly, skipping HEIC entirely. Existing photos can also be re-exported as JPG from the Photos app (Share → then most export options offer a JPG option).";
+  }
   if(/central directory|is this a zip file/i.test(msg)){
     return "That file doesn't look like a valid .docx — Word to PDF needs a modern Word document (2007 or later). If you have an older .doc file, open it in Word and re-save it as .docx first.";
   }
@@ -2836,10 +2986,14 @@ function explainConversionError(err, toolId){
   return 'Something went wrong during conversion. Check the console for details.';
 }
 
+/* Renders a completed conversion's downloadable file(s). Deliberately
+   does NOT clear previous results first — every conversion in the
+   session stays visible and downloadable until the page is refreshed,
+   newest at the top. Losing earlier results the moment you convert a
+   second file was a real usability gap, not intended behavior. */
 function renderResults(results){
   const section = document.getElementById('results');
   const list = document.getElementById('result-list');
-  list.innerHTML = '';
   results.forEach(r=>{
     const card = document.createElement('div');
     card.className = 'result-card';
@@ -2851,7 +3005,7 @@ function renderResults(results){
       </div>
       <a class="download-link" href="${r.url}" download="${r.name}">${t('download')}</a>
     `;
-    list.appendChild(card);
+    list.prepend(card); // newest conversion appears at the top
   });
   section.classList.add('show');
   section.scrollIntoView({ behavior:'smooth', block:'start' });
@@ -2897,7 +3051,6 @@ function renderResults(results){
 // pk_test_... key while developing, pk_live_... only once you're ready
 // to take real payments).
 const STRIPE_PUBLISHABLE_KEY = 'pk_test_51Tojub1Q1WEoih3D3SrAJSILhhAbkpT4Ad22izadeloSX1lpPqvdBBjwSjKkoSgTqFUUKj8f2jleOUw8XqjIryzM00EMe1OF5n'; // PLACEHOLDER
-
 
 // The backend endpoint that creates a Checkout Session (see
 // stripe-backend-example.js). Until this points at a real, deployed
@@ -3030,6 +3183,11 @@ function init(){
     hideRewardedVideoModal();
     hidePaywallModal();   // closes it if that's where the person came from
     hideAdBlockModal();   // closes it if that's where the person came from instead
+  });
+
+  // Resize Image: toggling "keep aspect ratio" off enables manual height entry.
+  document.getElementById('resize-keep-ratio').addEventListener('change', e=>{
+    document.getElementById('resize-height-input').disabled = e.target.checked;
   });
 
   // Contact modal: open from the footer link, close via backdrop click
