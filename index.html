@@ -2940,9 +2940,16 @@ async function runConversion(){
 
   try{
     const results = await fn(queuedFiles);
-    queuedFiles.forEach(f=> f.status = 'done');
-    renderFileList();
     renderResults(results);
+    // Clear the queue on success — an already-converted file has no
+    // reason to stick around, and leaving it in queuedFiles was the
+    // actual bug: it got re-validated (and could block) every future
+    // conversion attempt, even against a completely different tool.
+    // On FAILURE (catch block below), files are deliberately left in
+    // place, marked 'error', so the person can see what failed and
+    // remove it manually via the existing remove button.
+    queuedFiles = [];
+    renderFileList();
   }catch(err){
     console.error('Conversion failed:', err);
     queuedFiles.forEach(f=> f.status = 'error');
