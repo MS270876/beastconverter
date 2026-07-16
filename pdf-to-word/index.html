@@ -16,28 +16,22 @@
      cards, which only ever read this raw HTML at share/crawl time.
      ============================================================ -->
 <title>Convert PDF to Word Online - 100% Private | BeastConverter</title>
-<meta name="description" content="content="Convert your PDF files to editable Word documents instantly and locally in your browser. No server uploads, 100% secure and private.">
-<link rel="canonical" href="https://beastconverter.com/">
+<meta name="description" content="Convert your PDF files to editable Word documents instantly and locally in your browser. No server uploads, 100% secure and private.">
+<link rel="canonical" href="https://beastconverter.com/pdf-to-word">
 <meta name="robots" content="index, follow">
-
-<!-- hreflang: self-referencing + x-default only. Real per-language
-     hreflang alternates require separate URLs per language (e.g.
-     beastconverter.com/da/), which this single-file site doesn't have
-     yet — see the to-do list for that. A self-referencing tag alone
-     is still valid and harmless; it just isn't doing the full job an
-     hreflang cluster normally does. -->
-<link rel="alternate" hreflang="en" href="https://beastconverter.com/">
-<link rel="alternate" hreflang="x-default" href="https://beastconverter.com/">
-
+<link rel="alternate" hreflang="en" href="https://beastconverter.com/pdf-to-word">
+<link rel="alternate" hreflang="da" href="https://beastconverter.com/da/pdf-til-word">
+<link rel="alternate" hreflang="x-default" href="https://beastconverter.com/pdf-to-word">
+     
 <!-- Open Graph (Facebook, LinkedIn, etc.) — static, English only.
      These do NOT update when the visitor switches language in-app,
      because link-preview bots don't execute JavaScript; they only
      ever read this raw HTML once, at share/crawl time. -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://beastconverter.com/">
+<meta property="og:url" content="https://beastconverter.com/pdf-to-word">
 <meta property="og:site_name" content="BeastConverter">
-<meta property="og:title" content="BeastConverter: Free, Private PDF to Word & File Converter">
-<meta property="og:description" content="Convert PDF to Word, compress PDF, and more — 100% in your browser. Files are never uploaded to a server.">
+<meta property="og:title" content="Convert PDF to Word Online - 100% Private | BeastConverter">
+<meta property="og:description" content="Convert your PDF files to editable Word documents instantly and locally in your browser. No server uploads, 100% secure and private.">
 <meta property="og:locale" content="en_US">
 <!-- ============================================================
      REQUIRED ACTION BEFORE THIS TAG DOES ANYTHING:
@@ -59,8 +53,8 @@
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="BeastConverter: Free, Private PDF to Word & File Converter">
-<meta name="twitter:description" content="Convert PDF to Word, compress PDF, and more — 100% in your browser. Files never touch a server.">
+<meta name="twitter:title" content="Convert PDF to Word Online - 100% Private | BeastConverter">
+<meta name="twitter:description" content="Convert your PDF files to editable Word documents instantly and locally in your browser. No server uploads, 100% secure and private.">
 <meta name="twitter:image" content="https://beastconverter.com/og-image.png">
 
 <!-- ============================================================
@@ -76,9 +70,8 @@
   "@type": "WebApplication",
   "name": "BeastConverter",
   "url": "https://beastconverter.com/",
-  "description": "Convert PDF to Word, compress PDF, and more — entirely in your browser. Files are never uploaded to a server.",
-  "applicationCategory": "Utility",
-  "operatingSystem": "Any (runs in any modern web browser)",
+ "url": "https://beastconverter.com/pdf-to-word",
+  "description": "Convert your PDF files to editable Word documents instantly and locally in your browser. No server uploads, 100% secure and private.",  "operatingSystem": "Any (runs in any modern web browser)",
   "offers": {
     "@type": "Offer",
     "name": "24-Hour Beast Pass",
@@ -162,12 +155,11 @@
 <main class="wrap">
 
   <!-- ================= HERO ================= -->
-  <section class="hero">
-    <div class="eyebrow"><span class="dot"></span><span data-i18n="eyebrow">100% local · nothing ever uploaded</span></div>
-    <h1 data-i18n="hero_title">Convert files like a <em>beast.</em> Right in your browser.</h1>
-    <p class="hero-sub" data-i18n="hero_sub">Images, PDFs and spreadsheets — converted instantly on your own device. No servers, no waiting rooms, no stranger touching your files.</p>
+ <section class="hero">
+    <div class="eyebrow"><span class="dot"></span><span>100% local · nothing ever uploaded</span></div>
+    <h1>Free <em>PDF to Word</em> Converter — 100% Private</h1>
+    <p class="hero-sub">Turn any PDF into an editable .docx file without installing anything or uploading your document anywhere — the conversion runs entirely inside your own browser tab. Your file never leaves your device.</p>
   </section>
-
   <div class="main-layout">
     <div class="main-col">
 
@@ -531,5 +523,10 @@
 </div>
 
 <script src="/assets/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => { if (typeof selectTool === 'function') selectTool('pdf2word'); }, 0);
+  });
+</script>
 </body>
 </html>
