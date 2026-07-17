@@ -1,42 +1,82 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr" data-theme="dark">
 <head>
-<meta charset="UTF-8">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4073202289420632"
      crossorigin="anonymous"></script>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 
-<title>Convert PDF to Word Online - 100% Private | BeastConverter</title>
-<meta name="description" content="Convert your PDF files to editable Word documents instantly and locally in your browser. No server uploads, 100% secure and private.">
-<link rel="canonical" href="https://beastconverter.com/pdf-to-word">
+<!-- ============================================================
+     SEO — TITLE / META DESCRIPTION
+     English is the version search engines and social-share bots see
+     by default, since this is a single static URL with no server-side
+     locale routing. JS-driven per-language title/meta swapping (see
+     updateSEOMeta() later in this file) helps Googlebot, which does
+     render JS — but does NOT help Facebook/Twitter/LinkedIn preview
+     cards, which only ever read this raw HTML at share/crawl time.
+     ============================================================ -->
+<title>BeastConverter: Free, Private PDF to Word & File Converter</title>
+<meta name="description" content="Convert PDF to Word, compress PDF, and more — 100% in your browser. Files are never uploaded to a server. Free, private, secure file conversion.">
+<link rel="canonical" href="https://beastconverter.com/">
 <meta name="robots" content="index, follow">
-<link rel="alternate" hreflang="en" href="https://beastconverter.com/pdf-to-word">
-<link rel="alternate" hreflang="da" href="https://beastconverter.com/da/pdf-til-word">
-<link rel="alternate" hreflang="x-default" href="https://beastconverter.com/pdf-to-word">
 
+<!-- hreflang: self-referencing + x-default only. Real per-language
+     hreflang alternates require separate URLs per language (e.g.
+     beastconverter.com/da/), which this single-file site doesn't have
+     yet — see the to-do list for that. A self-referencing tag alone
+     is still valid and harmless; it just isn't doing the full job an
+     hreflang cluster normally does. -->
+<link rel="alternate" hreflang="en" href="https://beastconverter.com/">
+<link rel="alternate" hreflang="x-default" href="https://beastconverter.com/">
+
+<!-- Open Graph (Facebook, LinkedIn, etc.) — static, English only.
+     These do NOT update when the visitor switches language in-app,
+     because link-preview bots don't execute JavaScript; they only
+     ever read this raw HTML once, at share/crawl time. -->
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://beastconverter.com/pdf-to-word">
+<meta property="og:url" content="https://beastconverter.com/">
 <meta property="og:site_name" content="BeastConverter">
-<meta property="og:title" content="Convert PDF to Word Online - 100% Private | BeastConverter">
-<meta property="og:description" content="Convert your PDF files to editable Word documents instantly and locally in your browser. No server uploads, 100% secure and private.">
+<meta property="og:title" content="BeastConverter: Free, Private PDF to Word & File Converter">
+<meta property="og:description" content="Convert PDF to Word, compress PDF, and more — 100% in your browser. Files are never uploaded to a server.">
 <meta property="og:locale" content="en_US">
+<!-- ============================================================
+     REQUIRED ACTION BEFORE THIS TAG DOES ANYTHING:
+     This points at an image that does NOT exist yet. You (or a
+     design pass) need to create a real 1200×630px PNG or JPG and
+     upload it to this exact path in the website repo, alongside
+     index.html. Until that file exists at this URL, most platforms
+     will show a broken or blank image in share previews — which
+     is why this was left out entirely in the previous version.
+     Once the file exists, this tag needs no other changes.
+     Suggested content: dark background matching the site theme,
+     the BeastConverter wordmark + claw-mark logo, and a short
+     tagline like "Free. Private. 100% in your browser."
+     ============================================================ -->
 <meta property="og:image" content="https://beastconverter.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="BeastConverter — free, private file conversion in your browser">
 
+<!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Convert PDF to Word Online - 100% Private | BeastConverter">
-<meta name="twitter:description" content="Convert your PDF files to editable Word documents instantly and locally in your browser. No server uploads, 100% secure and private.">
+<meta name="twitter:title" content="BeastConverter: Free, Private PDF to Word & File Converter">
+<meta name="twitter:description" content="Convert PDF to Word, compress PDF, and more — 100% in your browser. Files never touch a server.">
 <meta name="twitter:image" content="https://beastconverter.com/og-image.png">
 
+<!-- ============================================================
+     JSON-LD structured data (schema.org/WebApplication).
+     Deliberately does NOT include aggregateRating/review fields —
+     fabricating star ratings you don't have is exactly the kind of
+     structured-data spam Google's manual actions team looks for.
+     Add real review markup only once you have real reviews.
+     ============================================================ -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "BeastConverter",
-  "url": "https://beastconverter.com/pdf-to-word",
-  "description": "Convert your PDF files to editable Word documents instantly and locally in your browser. No server uploads, 100% secure and private.",
+  "url": "https://beastconverter.com/",
+  "description": "Convert PDF to Word, compress PDF, and more — entirely in your browser. Files are never uploaded to a server.",
   "applicationCategory": "Utility",
   "operatingSystem": "Any (runs in any modern web browser)",
   "offers": {
@@ -59,69 +99,32 @@
 }
 </script>
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {
-      "@type": "Question",
-      "name": "Will the converted Word document keep the original formatting?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "BeastConverter aims to preserve the PDF's text structure, paragraphs, images, and general layout. Complex tables, unusual fonts, multi-column pages, and highly designed documents may require minor adjustments after conversion."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I convert a scanned PDF to Word?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "A scanned PDF contains images rather than selectable text and normally requires optical character recognition, or OCR. If the source PDF has a searchable text layer, its content can be converted more accurately; image-only scans may not become fully editable."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Is it safe to convert confidential PDFs?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Yes. Processing takes place locally in your browser, and your PDF is never uploaded to a cloud conversion server. The document remains on your device throughout the workflow."
-      }
-    },
-    {
-      "@type": "Question",
-      "name": "Can I convert a large PDF to Word?",
-      "acceptedAnswer": {
-        "@type": "Answer",
-        "text": "Large files can be processed, but the practical limit depends on your device's available memory, browser, document complexity, and page count. Closing memory-heavy tabs can improve performance for demanding PDFs."
-      }
-    }
-  ]
-}
-</script>
-
+<!-- ============================================================
+     FONTS — Space Grotesk (display/data), Inter (body), JetBrains Mono (technical/counter)
+     ============================================================ -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
+<!-- ============================================================
+     THIRD-PARTY CONVERSION LIBRARIES (all run 100% client-side —
+     files never touch a network request once loaded)
+     ============================================================ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js"></script>
+<!-- New for this update: PDF to Word, Word to PDF, PDF to Text, Compress PDF -->
+<!-- NOTE: docx (used for PDF-to-Word) is loaded via dynamic import() inside
+     pdf2word() instead of a <script> tag here — see that function for why. -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- Stripe.js — required for redirectToCheckout(). This is Stripe's own
+     script, loaded from Stripe's CDN; it never has access to your
+     Secret Key or webhook secret, only the Publishable Key below. -->
 <script src="https://js.stripe.com/v3/"></script>
 
 <link rel="stylesheet" href="/assets/styles.css">
-
-<!-- This is a dedicated landing page: it has its own hard-coded SEO tags
-     above (title/description/canonical/hreflang), unique to this exact
-     tool+language combination. window.BC_SKIP_SEO_META_UPDATE tells the
-     shared engine (assets/app.js) not to overwrite those tags with the
-     generic homepage copy once it initializes — see updateSEOMeta() in
-     that file for why this matters. -->
-<script>window.BC_SKIP_SEO_META_UPDATE = true;</script>
-
 </head>
 <body>
 
@@ -159,12 +162,12 @@
 <main class="wrap">
 
   <!-- ================= HERO ================= -->
-  <!-- ================= HERO ================= -->
   <section class="hero">
-    <div class="eyebrow"><span class="dot"></span><span>100% local · nothing ever uploaded</span></div>
-    <h1>Free <em>PDF to Word</em> Converter — 100% Private</h1>
-    <p class="hero-sub">Turn any PDF into an editable .docx file without installing anything or uploading your document anywhere — the conversion runs entirely inside your own browser tab. Your file never leaves your device.</p>
+    <div class="eyebrow"><span class="dot"></span><span data-i18n="eyebrow">100% local · nothing ever uploaded</span></div>
+    <h1 data-i18n="hero_title">Convert files like a <em>beast.</em> Right in your browser.</h1>
+    <p class="hero-sub" data-i18n="hero_sub">Images, PDFs and spreadsheets — converted instantly on your own device. No servers, no waiting rooms, no stranger touching your files.</p>
   </section>
+
   <div class="main-layout">
     <div class="main-col">
 
@@ -311,24 +314,8 @@
     </aside>
   </div>
 
-  <section class="page-content">
-
-    <h2>Convert PDF to Word Fast, Privately, and Locally</h2>
-    <p>Turn rigid PDF files into editable Word documents without surrendering control of your data. BeastConverter processes every conversion 100% locally in your browser, so your files are never uploaded to a cloud server, queued for remote processing, or stored after conversion. This local-first architecture delivers near-instant performance while keeping contracts, reports, invoices, and other sensitive documents on your device. You get a fast, private PDF to Word workflow with no unnecessary network transfer and none of the exposure built into legacy server-based converters. Convert, download, and continue working.</p>
-
-    <h2>How to Convert PDF to Word</h2>
-    <ul>
-      <li>Select or drag your PDF file into the PDF to Word converter.</li>\n      <li>Let BeastConverter process the document locally in your browser.</li>\n      <li>Review the completed conversion and download your editable Word file.</li>\n      <li>Open the document in Microsoft Word or another compatible editor and make your changes.</li>
-    </ul>
-
-    <h2>PDF to Word FAQ</h2>
-    <ul>
-      <li>Will the converted Word document keep the original formatting? BeastConverter aims to preserve the PDF's text structure, paragraphs, images, and general layout. Complex tables, unusual fonts, multi-column pages, and highly designed documents may require minor adjustments after conversion.</li>\n      <li>Can I convert a scanned PDF to Word? A scanned PDF contains images rather than selectable text and normally requires optical character recognition, or OCR. If the source PDF has a searchable text layer, its content can be converted more accurately; image-only scans may not become fully editable.</li>\n      <li>Is it safe to convert confidential PDFs? Yes. Processing takes place locally in your browser, and your PDF is never uploaded to a cloud conversion server. The document remains on your device throughout the workflow.</li>\n      <li>Can I convert a large PDF to Word? Large files can be processed, but the practical limit depends on your device's available memory, browser, document complexity, and page count. Closing memory-heavy tabs can improve performance for demanding PDFs.</li>
-    </ul>
-
-  </section>
-
 </main>
+
 <footer>
   <div class="wrap">
     <div class="footer-grid">
@@ -544,24 +531,5 @@
 </div>
 
 <script src="/assets/app.js"></script>
-<script src="/assets/app.js"></script>
-
-<script>
-  // Landing-page-specific: preselect this page's target tool once the
-  // shared engine (assets/app.js) has finished its own init(). Listener
-  // order guarantees this runs after app.js's own DOMContentLoaded
-  // handler, since app.js is loaded/parsed earlier in the document.
-  document.addEventListener('DOMContentLoaded', () => {
-    setTime<script src="/assets/app.js"></script>
-<script>
-  // Landing-page-specific: preselect this page's target tool once the
-  // shared engine (assets/app.js) has finished its own init(). Listener
-  // order guarantees this runs after app.js's own DOMContentLoaded
-  // handler, since app.js is loaded/parsed earlier in the document.
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => { if (typeof selectTool === 'function') selectTool('pdf2word'); }, 0);
-  });
-</script>
-
 </body>
 </html>
