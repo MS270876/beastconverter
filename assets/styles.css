@@ -332,6 +332,33 @@ h1 em{ font-style:normal; color:var(--emerald); }
 .resize-options .resize-checkbox-label input[type="checkbox"]{ width:15px; height:15px; accent-color:var(--emerald); cursor:pointer; }
 .resize-options .resize-hint{ color:var(--fog); font-size:.78rem; flex-basis:100%; }
 
+/* ================= LANDING PAGE CONTENT (SEO / FAQ body copy) =================
+   Reusable section for the substantive "how to" + FAQ content that gives
+   each dedicated landing page real, unique value beyond the tool itself —
+   this is what keeps a landing page from reading as thin/doorway content.
+   Deliberately plain and readable rather than card-styled, since this is
+   meant to read as genuine informational content, not another UI module. */
+.page-content{ max-width:760px; margin:64px auto 0; padding:0 0 40px; }
+.page-content h2{
+  font-family:var(--ff-display); color:#fff; font-size:1.5rem; font-weight:700;
+  margin:40px 0 14px; letter-spacing:-.01em;
+}
+.page-content h2:first-child{ margin-top:0; }
+.page-content p{ color:var(--mist); font-size:.98rem; line-height:1.7; margin-bottom:12px; }
+.page-content ul{ list-style:none; padding:0; margin:0 0 12px; }
+.page-content ul li{
+  color:var(--mist); font-size:.96rem; line-height:1.6; padding:10px 0 10px 28px;
+  border-bottom:var(--border-hair); position:relative;
+}
+.page-content ul li:last-child{ border-bottom:none; }
+.page-content ul li::before{
+  content:''; position:absolute; left:0; top:18px; width:8px; height:8px;
+  border-radius:50%; background:var(--emerald);
+}
+[dir="rtl"] .page-content ul li{ padding:10px 28px 10px 0; }
+[dir="rtl"] .page-content ul li::before{ left:auto; right:0; }
+
+
 .convert-bar{
   position:sticky; bottom:0; z-index:40; margin-top:30px;
   background:var(--bg-elevated); border:var(--border-hair); border-radius:var(--radius-md);
