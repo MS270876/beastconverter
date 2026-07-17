@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4073202289420632"
+     crossorigin="anonymous"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+
+<title>Convert PDF to Word Online - 100% Private | BeastConverter</title>
+<meta name="description" content="Convert your PDF files to editable Word documents instantly and locally in your browser. No server uploads, 100% secure and private.">
+<link rel="canonical" href="https://beastconverter.com/pdf-to-word">
+<meta name="robots" content="index, follow">
+<link rel="alternate" hreflang="en" href="https://beastconverter.com/pdf-to-word">
+<link rel="alternate" hreflang="da" href="https://beastconverter.com/da/pdf-til-word">
+<link rel="alternate" hreflang="x-default" href="https://beastconverter.com/pdf-to-word">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://beastconverter.com/pdf-to-word">
+<meta property="og:site_name" content="BeastConverter">
+<meta property="og:title" content="Convert PDF to Word Online - 100% Private | BeastConverter">
+<meta property="og:description" content="Convert your PDF files to editable Word documents instantly and locally in your browser. No server uploads, 100% secure and private.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://beastconverter.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="BeastConverter — free, private file conversion in your browser">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Convert PDF to Word Online - 100% Private | BeastConverter">
+<meta name="twitter:description" content="Convert your PDF files to editable Word documents instantly and locally in your browser. No server uploads, 100% secure and private.">
+<meta name="twitter:image" content="https://beastconverter.com/og-image.png">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "BeastConverter",
+  "url": "https://beastconverter.com/pdf-to-word",
+  "description": "Convert your PDF files to editable Word documents instantly and locally in your browser. No server uploads, 100% secure and private.",
+  "applicationCategory": "Utility",
+  "operatingSystem": "Any (runs in any modern web browser)",
+  "offers": {
+    "@type": "Offer",
+    "name": "24-Hour Beast Pass",
+    "price": "7",
+    "priceCurrency": "DKK"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Make Sense ApS",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Blangstedaardsvej 1",
+      "postalCode": "5220",
+      "addressLocality": "Odense",
+      "addressCountry": "DK"
+    }
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Will the converted Word document keep the original formatting?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "BeastConverter aims to preserve the PDF's text structure, paragraphs, images, and general layout. Complex tables, unusual fonts, multi-column pages, and highly designed documents may require minor adjustments after conversion."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I convert a scanned PDF to Word?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A scanned PDF contains images rather than selectable text and normally requires optical character recognition, or OCR. If the source PDF has a searchable text layer, its content can be converted more accurately; image-only scans may not become fully editable."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it safe to convert confidential PDFs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Processing takes place locally in your browser, and your PDF is never uploaded to a cloud conversion server. The document remains on your device throughout the workflow."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I convert a large PDF to Word?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Large files can be processed, but the practical limit depends on your device's available memory, browser, document complexity, and page count. Closing memory-heavy tabs can improve performance for demanding PDFs."
+      }
+    }
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://js.stripe.com/v3/"></script>
+
+<link rel="stylesheet" href="/assets/styles.css">
+
+<!-- This is a dedicated landing page: it has its own hard-coded SEO tags
+     above (title/description/canonical/hreflang), unique to this exact
+     tool+language combination. window.BC_SKIP_SEO_META_UPDATE tells the
+     shared engine (assets/app.js) not to overwrite those tags with the
+     generic homepage copy once it initializes — see updateSEOMeta() in
+     that file for why this matters. -->
+<script>window.BC_SKIP_SEO_META_UPDATE = true;</script>
+
+</head>
+<body>
+
+<div class="claw-bg" aria-hidden="true"></div>
+
+<!-- ============================================================
+     AD SLOT — TOP HORIZONTAL BANNER (Google AdSense)
+     Replace the placeholder div below with your <ins class="adsbygoogle">
+     tag once you have an approved AdSense unit.
+     ============================================================ -->
+<div class="ad-slot ad-top" id="ad-top" data-ad-slot="top-banner">
+  <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="0000000000" data-ad-format="horizontal"></ins> -->
+  <span data-i18n="ad_placeholder">Advertisement — 728×90</span>
+</div>
+
+<header>
+  <div class="nav wrap">
+    <div class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 6L9 18" stroke="#06231A" stroke-width="2.2" stroke-linecap="round"/><path d="M11.5 4L16 20" stroke="#06231A" stroke-width="2.2" stroke-linecap="round"/><path d="M15.5 7L19 17" stroke="#06231A" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </span>
+      <span class="logo-word">Beast<small>Converter</small></span>
+      <span class="free-badge" data-i18n="nav_free">Free</span>
+    </div>
+    <div class="nav-right">
+      <select class="lang-select" id="lang-select" aria-label="Select language"></select>
+      <button class="beast-pass-btn" id="beast-pass-nav-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="#1a1206"/></svg>
+        <span data-i18n="nav_beastpass">Beast Pass</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ================= HERO ================= -->
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="eyebrow"><span class="dot"></span><span>100% local · nothing ever uploaded</span></div>
+    <h1>Free <em>PDF to Word</em> Converter — 100% Private</h1>
+    <p class="hero-sub">Turn any PDF into an editable .docx file without installing anything or uploading your document anywhere — the conversion runs entirely inside your own browser tab. Your file never leaves your device.</p>
+  </section>
+  <div class="main-layout">
+    <div class="main-col">
+
+      <!-- ================= CONVERSION METER (Beast Engine readout) ================= -->
+      <!-- Sits directly above the drop zone so the free-conversion budget is
+           impossible to miss before a user commits a file. -->
+      <div class="meter-panel" role="status" aria-live="polite" id="meter-panel">
+        <div class="meter-panel-left">
+          <div class="meter-notches" id="meter-notches">
+            <div class="notch"></div><div class="notch"></div><div class="notch"></div>
+          </div>
+          <span class="meter-readout" id="meter-readout">3/3 <span data-i18n="meter_label">conversions remaining</span></span>
+        </div>
+        <span class="meter-window" id="meter-window-text" data-i18n="meter_window">resets on a rolling 15-minute window</span>
+      </div>
+
+      <!-- ================= DROP ZONE ================= -->
+      <!-- ============================================================
+           DROP-CATCH AREA — wraps both the dropzone box AND the tool
+           grid below it. Drag events are handled on THIS whole wrapper
+           (see setupDropzone() in the script), not just the small
+           dropzone box, so once a tool is selected you can drop a file
+           anywhere over the tool cards too, without scrolling back up
+           to the small box specifically. The small box still gets its
+           own tighter visual highlight; the wrapper gets a lighter
+           full-area highlight so there's feedback wherever you are.
+           ============================================================ -->
+      <div class="drop-catch-area" id="drop-catch-area">
+
+      <section class="dropzone-region">
+        <div class="dropzone" id="dropzone">
+          <div class="drop-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3V15M12 3L7 8M12 3L17 8" stroke="#17C989" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16V18C4 19.1046 4.89543 20 6 20H18C19.1046 20 20 19.1046 20 18V16" stroke="#17C989" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h3 data-i18n="drop_title">Drag files here to unleash the beast</h3>
+          <p data-i18n="drop_sub">or choose files from your device — they never leave it</p>
+          <label class="browse-btn" for="file-input">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12V17C4 18.6569 5.34315 20 7 20H17C18.6569 20 20 18.6569 20 17V12" stroke="#06231A" stroke-width="2" stroke-linecap="round"/><path d="M12 4V15M12 4L8 8M12 4L16 8" stroke="#06231A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span data-i18n="drop_browse">Browse files</span>
+          </label>
+          <input type="file" id="file-input" multiple accept=".png,.jpg,.jpeg,.webp,.heic,.heif,.pdf,.csv,.docx,.xlsx">
+          <div class="drop-formats" data-i18n="drop_formats">HEIC · PNG · JPG · WEBP · PDF · CSV — max 50MB per file</div>
+
+          <div class="file-list-tool-label" id="file-list-tool-label" style="display:none;"></div>
+          <div class="file-list" id="file-list"></div>
+        </div>
+      </section>
+
+      <!-- ================= TOOL GRID ================= -->
+      <section class="tools-section">
+        <div class="section-head">
+          <span class="kicker" data-i18n="tools_kicker">Choose your weapon</span>
+          <h2 data-i18n="tools_title">Every tool runs offline, in your tab</h2>
+        </div>
+
+        <div class="tool-grid" id="tool-grid">
+          <!-- Tool cards are rendered by JS from the TOOLS config so labels stay in sync with i18n -->
+        </div>
+
+        <!-- ================= RESIZE OPTIONS ================= -->
+        <!-- Only Resize Image needs a parameter from the person — every
+             other tool just needs a file. Hidden by default; toggled by
+             selectTool() when 'resizeimage' is (de)selected. A single
+             width field (not width+height) is deliberate: with multiple
+             queued files of different original sizes, one target width
+             with auto-computed proportional height is far more usable
+             than asking for exact width+height per batch. -->
+        <div class="resize-options" id="resize-options" style="display:none;">
+          <label for="resize-width-input" data-i18n="resize_width_label">Target width</label>
+          <input type="number" id="resize-width-input" value="1024" min="16" max="8000" step="1">
+          <span class="resize-unit">px</span>
+
+          <label for="resize-height-input" data-i18n="resize_height_label" style="margin-left:14px;">Target height</label>
+          <input type="number" id="resize-height-input" value="768" min="16" max="8000" step="1" disabled>
+          <span class="resize-unit">px</span>
+
+          <label class="resize-checkbox-label">
+            <input type="checkbox" id="resize-keep-ratio" checked>
+            <span data-i18n="resize_keep_ratio_label">Keep aspect ratio</span>
+          </label>
+
+          <span class="resize-hint" id="resize-hint-text" data-i18n="resize_keep_ratio_hint">Uncheck to set an exact height too — this may stretch or squash images that don't match this ratio.</span>
+        </div>
+
+        <!-- ================= ROTATE OPTIONS ================= -->
+        <div class="resize-options" id="rotate-options" style="display:none;">
+          <label for="rotate-angle-select" data-i18n="rotate_angle_label">Rotation</label>
+          <select id="rotate-angle-select" class="lang-select" style="padding:8px 30px 8px 12px;">
+            <option value="90" data-i18n="rotate_option_90">Rotate 90° clockwise</option>
+            <option value="180" data-i18n="rotate_option_180">Rotate 180°</option>
+            <option value="270" data-i18n="rotate_option_270">Rotate 90° counter-clockwise</option>
+          </select>
+        </div>
+
+        <div class="convert-bar">
+          <div class="summary">
+            <span data-i18n="bar_selected">Selected tool</span>:
+            <b id="bar-tool-name" data-i18n="bar_none">none</b>
+            &nbsp;·&nbsp;
+            <span data-i18n="bar_files">Files</span>: <b id="bar-file-count">0</b>
+          </div>
+          <button class="convert-btn" id="convert-btn" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="#06231A"/></svg>
+            <span data-i18n="bar_convert">Convert now</span>
+          </button>
+        </div>
+      </section>
+
+      </div><!-- /#drop-catch-area -->
+
+      <!-- ================= RESULTS ================= -->
+      <section class="results" id="results">
+        <div class="section-head" style="margin-bottom:20px;">
+          <span class="kicker" data-i18n="results_kicker">Fresh out of the den</span>
+          <h2 data-i18n="results_title">Your files are ready</h2>
+        </div>
+        <div id="result-list"></div>
+      </section>
+
+      <!-- ============================================================
+           AD SLOT — BELOW DOWNLOAD/PAYWALL SECTION
+           High-visibility placement: shown right after a successful
+           conversion, or beneath the paywall when the limit is hit.
+           ============================================================ -->
+      <div class="ad-slot ad-below-download" id="ad-below-download" data-ad-slot="below-download">
+        <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="1111111111" data-ad-format="auto"></ins> -->
+        <span data-i18n="ad_placeholder">Advertisement — 728×90</span>
+      </div>
+
+      <!-- Paywall is now a full-screen modal overlay (#paywall-overlay), defined
+           near the end of <body> alongside the AdBlock modal, and triggered by JS
+           the instant the free-conversion count hits zero. -->
+
+    </div>
+
+    <!-- ============================================================
+         AD SLOT — SIDEBAR (desktop only, hidden under 980px)
+         ============================================================ -->
+    <aside class="sidebar-col">
+      <div class="ad-slot ad-sidebar" id="ad-sidebar" data-ad-slot="sidebar">
+        <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="2222222222" data-ad-format="vertical"></ins> -->
+        <span data-i18n="ad_placeholder_sidebar">Advertisement — 300×600</span>
+      </div>
+    </aside>
+  </div>
+
+  <section class="page-content">
+
+    <h2>Convert PDF to Word Fast, Privately, and Locally</h2>
+    <p>Turn rigid PDF files into editable Word documents without surrendering control of your data. BeastConverter processes every conversion 100% locally in your browser, so your files are never uploaded to a cloud server, queued for remote processing, or stored after conversion. This local-first architecture delivers near-instant performance while keeping contracts, reports, invoices, and other sensitive documents on your device. You get a fast, private PDF to Word workflow with no unnecessary network transfer and none of the exposure built into legacy server-based converters. Convert, download, and continue working.</p>
+
+    <h2>How to Convert PDF to Word</h2>
+    <ul>
+      <li>Select or drag your PDF file into the PDF to Word converter.</li>\n      <li>Let BeastConverter process the document locally in your browser.</li>\n      <li>Review the completed conversion and download your editable Word file.</li>\n      <li>Open the document in Microsoft Word or another compatible editor and make your changes.</li>
+    </ul>
+
+    <h2>PDF to Word FAQ</h2>
+    <ul>
+      <li>Will the converted Word document keep the original formatting? BeastConverter aims to preserve the PDF's text structure, paragraphs, images, and general layout. Complex tables, unusual fonts, multi-column pages, and highly designed documents may require minor adjustments after conversion.</li>\n      <li>Can I convert a scanned PDF to Word? A scanned PDF contains images rather than selectable text and normally requires optical character recognition, or OCR. If the source PDF has a searchable text layer, its content can be converted more accurately; image-only scans may not become fully editable.</li>\n      <li>Is it safe to convert confidential PDFs? Yes. Processing takes place locally in your browser, and your PDF is never uploaded to a cloud conversion server. The document remains on your device throughout the workflow.</li>\n      <li>Can I convert a large PDF to Word? Large files can be processed, but the practical limit depends on your device's available memory, browser, document complexity, and page count. Closing memory-heavy tabs can improve performance for demanding PDFs.</li>
+    </ul>
+
+  </section>
+
+</main>
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo">
+          <span class="logo-mark">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 6L9 18" stroke="#06231A" stroke-width="2.2" stroke-linecap="round"/><path d="M11.5 4L16 20" stroke="#06231A" stroke-width="2.2" stroke-linecap="round"/><path d="M15.5 7L19 17" stroke="#06231A" stroke-width="2.2" stroke-linecap="round"/></svg>
+          </span>
+          <span class="logo-word">Beast<small>Converter</small></span>
+        </div>
+        <p data-i18n="footer_tagline">Local-first file conversion. Your files stay on your device, always.</p>
+      </div>
+      <div class="footer-links">
+        <div class="footer-col">
+          <h5 data-i18n="footer_tools">Tools</h5>
+          <a href="#tool-grid" data-i18n="footer_tools_1">Image conversion</a>
+          <a href="#tool-grid" data-i18n="footer_tools_2">PDF tools</a>
+          <a href="#tool-grid" data-i18n="footer_tools_3">Spreadsheets</a>
+        </div>
+        <div class="footer-col">
+          <h5 data-i18n="footer_company">Company</h5>
+          <a href="/privacy.html" data-i18n="footer_privacy">Privacy policy</a>
+          <a href="/terms.html" data-i18n="footer_terms">Terms of use</a>
+          <a href="/legal.html" data-i18n="footer_legal">Legal notice</a>
+          <a href="#" id="footer-contact-link" data-i18n="footer_contact">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; <span id="footer-year"></span> BeastConverter.com</span>
+      <span data-i18n="footer_note">Built with zero servers. Powered by your CPU.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     PAYWALL MODAL — fires the instant the free-conversion count hits
+     zero within the 15-minute rolling window. Two escape routes:
+     a rewarded-video placeholder and a Stripe Beast Pass placeholder.
+     ============================================================ -->
+<div class="paywall-overlay" id="paywall-overlay" role="dialog" aria-modal="true" aria-labelledby="pw-title">
+  <div class="paywall-card">
+    <div class="pw-icon">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 15V17M6 10H18C19.1046 10 20 10.8954 20 12V19C20 20.1046 19.1046 21 18 21H6C4.89543 21 4 20.1046 4 19V12C4 10.8954 4.89543 10 6 10ZM8 10V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V10" stroke="#F5A524" stroke-width="2" stroke-linecap="round"/></svg>
+    </div>
+    <h3 id="pw-title" data-i18n="pw_title">The beast needs to rest</h3>
+    <p data-i18n="pw_sub">You've used all 3 free conversions. They reset automatically — or skip the wait below.</p>
+    <div class="countdown" id="countdown">15:00<span data-i18n="pw_countdown_label">until your free conversions reset</span></div>
+    <div class="pw-actions">
+      <button class="pw-btn video" id="watch-video-btn">
+        <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M8 5V19L19 12L8 5Z" fill="currentColor"/></svg>
+        <span class="btn-text">
+          <b data-i18n="pw_video">Watch a 30s video to convert instantly for free</b>
+          <small data-i18n="pw_video_sub">Rewarded video · no account needed</small>
+        </span>
+      </button>
+      <button class="pw-btn stripe" id="beast-pass-btn">
+        <svg class="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M13 2L4 14H12L11 22L20 10H12L13 2Z" fill="#1a1206"/></svg>
+        <span class="btn-text">
+          <b data-i18n="pw_pass">Unlock instantly with a 24-Hour Beast Pass — 7 DKK / 1 EUR</b>
+          <small data-i18n="pw_pass_sub">Unlimited conversions · secured by Stripe</small>
+        </span>
+      </button>
+      <div class="value-compare">
+        <p>
+          <strong data-i18n="pw_value_compare_title">Why a Beast Pass?</strong>
+          <span data-i18n="pw_value_compare_body">Competitors charge 70+ DKK/month. BeastConverter gives you 24 hours of premium local power for just 7 DKK. No subscriptions. No hidden traps. 100% SSL Secure via Stripe.</span>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     CONTACT MODAL
+     IMPORTANT — this form has nowhere to send its data yet. There is
+     no backend in this project, so the <form> action below points to
+     a PLACEHOLDER endpoint. Before this goes live, do ONE of:
+       (a) Sign up for a free form-to-email service (e.g. Formspree,
+           https://formspree.io — free tier, no backend required) and
+           replace FORM_ENDPOINT_PLACEHOLDER below with the endpoint
+           they give you. This is the fastest path for a static site.
+       (b) Build a tiny serverless function (Cloudflare Worker,
+           Vercel/Netlify function) that emails you the submission,
+           and point the endpoint there instead.
+     Until one of those is wired up, submissions will fail silently
+     to the person filling out the form — don't ship this section
+     live without doing (a) or (b) first. -->
+<div class="modal-overlay" id="contact-modal">
+  <div class="modal-card">
+    <div class="mi" style="background:rgba(76,141,255,.12);">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 6H20V18H4V6Z" stroke="#4C8DFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 7L12 13L20 7" stroke="#4C8DFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h3 data-i18n="contact_title">Get in touch</h3>
+    <p data-i18n="contact_sub">Questions, bug reports, or a Beast Pass billing issue — send a message and we'll get back to you.</p>
+    <form id="contact-form" action="https://formspree.io/f/FORM_ENDPOINT_PLACEHOLDER" method="POST" style="text-align:left; display:flex; flex-direction:column; gap:12px;">
+      <div>
+        <label for="contact-name-input" class="visually-hidden" data-i18n="contact_name">Name</label>
+        <input id="contact-name-input" name="name" type="text" required placeholder="" data-i18n-placeholder="contact_name"
+               style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid #D8D4C8; background:#fff; color:var(--ink); font-family:var(--ff-body); font-size:.9rem;">
+      </div>
+      <div>
+        <label for="contact-email-input" class="visually-hidden" data-i18n="contact_email">Email</label>
+        <input id="contact-email-input" name="email" type="email" required placeholder="" data-i18n-placeholder="contact_email"
+               style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid #D8D4C8; background:#fff; color:var(--ink); font-family:var(--ff-body); font-size:.9rem;">
+      </div>
+      <div>
+        <label for="contact-message-input" class="visually-hidden" data-i18n="contact_message">Message</label>
+        <textarea id="contact-message-input" name="message" required rows="4" placeholder="" data-i18n-placeholder="contact_message"
+               style="width:100%; padding:12px 14px; border-radius:10px; border:1px solid #D8D4C8; background:#fff; color:var(--ink); font-family:var(--ff-body); font-size:.9rem; resize:vertical;"></textarea>
+      </div>
+      <button type="submit" class="pw-btn stripe" style="justify-content:center;">
+        <span class="btn-text"><b data-i18n="contact_send">Send message</b></span>
+      </button>
+      <p id="contact-status" style="font-size:.82rem; text-align:center; min-height:1.2em;"></p>
+    </form>
+    <p style="font-size:.78rem; color:#6B7280; text-align:center; margin-top:14px;" data-i18n="contact_direct">
+      Prefer email? Write to <a href="mailto:contact@beastconverter.com" style="color:inherit; text-decoration:underline;">contact@beastconverter.com</a> directly.
+    </p>
+  </div>
+</div>
+
+<!-- ============================================================
+     REWARDED VIDEO MODAL
+     Replaces a bare alert() with a real three-step UX shell:
+     confirm → (simulated) playing → success. NOT wired to a real ad
+     network yet — see the honest explanation in watchRewardedVideoPlaceholder()
+     in the script below for exactly what has to happen before this
+     can go live for real users.
+     ============================================================ -->
+<div class="modal-overlay" id="rewarded-video-modal">
+  <div class="modal-card">
+
+    <div id="rv-step-confirm">
+      <div class="mi" style="background:rgba(76,141,255,.12);">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5V19L19 12L8 5Z" fill="#4C8DFF"/></svg>
+      </div>
+      <h3 data-i18n="rv_confirm_title">Watch a quick ad?</h3>
+      <p data-i18n="rv_confirm_body">A 30-second video ad gets you 3 fresh free conversions, right now.</p>
+      <div class="modal-actions">
+        <button class="modal-btn primary" id="rv-watch-btn" data-i18n="rv_confirm_watch">Watch ad</button>
+        <button class="modal-btn secondary" id="rv-cancel-btn" data-i18n="rv_confirm_cancel">Not now</button>
+      </div>
+    </div>
+
+    <div id="rv-step-playing" style="display:none;">
+      <div class="mi" style="background:rgba(76,141,255,.12);">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" style="animation:notch-pulse 1.2s ease-in-out infinite;"><path d="M8 5V19L19 12L8 5Z" fill="#4C8DFF"/></svg>
+      </div>
+      <h3 data-i18n="rv_playing_title">Ad playing…</h3>
+      <p data-i18n="rv_playing_body">(Simulated for testing — a real ad network will show its own player here.)</p>
+    </div>
+
+    <div id="rv-step-success" style="display:none;">
+      <div class="mi" style="background:rgba(23,201,137,.12);">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13L9 17L19 7" stroke="#17C989" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h3 data-i18n="rv_success_title">Reward granted!</h3>
+      <p data-i18n="rv_success_body">You've got 3 fresh free conversions.</p>
+      <div class="modal-actions">
+        <button class="modal-btn primary" id="rv-continue-btn" data-i18n="rv_success_continue">Continue</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ================= ADBLOCK SOFT-WALL MODAL ================= -->
+<div class="modal-overlay" id="adblock-modal">
+  <div class="modal-card">
+    <div class="mi">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M12 9V13M12 17H12.01M10.29 3.86L1.82 18A2 2 0 003.54 21H20.46A2 2 0 0022.18 18L13.71 3.86A2 2 0 0010.29 3.86Z" stroke="#F2495C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h3 data-i18n="ab_title">We noticed an ad blocker</h3>
+    <p data-i18n="ab_sub">We get it, ads can be annoying. But unlike other converters, BeastConverter runs 100% in your browser. We don't harvest your data, and we don't use expensive cloud servers. We just need ads to keep the beast alive. Please whitelist us to continue for free, watch a quick rewarded video, or grab a 7 DKK pass.</p>
+    <div class="modal-actions">
+      <button class="modal-btn primary" id="ab-whitelist-btn" data-i18n="ab_whitelist">I've whitelisted the site</button>
+      <button class="modal-btn secondary" id="ab-video-btn" data-i18n="ab_video">Watch a quick video instead</button>
+      <button class="modal-btn secondary" id="ab-pass-btn" data-i18n="ab_pass">Get Beast Pass instead — 7 DKK</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= COOKIE CONSENT BANNER ================= -->
+<!-- IMPORTANT — READ BEFORE ENABLING ADSENSE FOR EEA/UK/SWISS TRAFFIC:
+     This is a simple, self-built accept/decline banner. It is NOT a TCF-
+     certified Consent Management Platform (CMP), and it will NOT satisfy
+     Google's EU User Consent Policy requirement for serving *personalized*
+     AdSense ads to users in the EEA, UK, or Switzerland (mandatory as of
+     16 Jan 2024 / 31 Jul 2024, moving to TCF v2.3 by 28 Feb 2026).
+
+     Before turning on personalized ads for that traffic, do ONE of:
+       (a) Recommended for launch — in the AdSense dashboard, go to
+           "Privacy & messaging" and enable Google's own European
+           regulations message. It's Google-certified and TCF-integrated
+           out of the box; no code changes needed here. You can also
+           choose "non-personalised ads only" for EEA/UK/CH traffic from
+           that same settings page, which sidesteps the CMP requirement
+           entirely (at some cost to ad revenue from that traffic).
+       (b) Replace this banner with a script tag from a third-party
+           Google-certified CMP (e.g. CookieYes, Cookiebot, Osano) that
+           supports TCF v2.3.
+     Outside the EEA/UK/Switzerland, Google does not mandate a TCF CMP,
+     so this simple banner remains a reasonable general-purpose notice
+     for the rest of the world (and can stay as a basic disclosure even
+     alongside option (a) or (b) above). -->
+<div class="cookie-banner" id="cookie-banner">
+  <p data-i18n="cookie_text">We use cookies for ads and basic analytics. No file data is ever collected — conversions happen entirely on your device.</p>
+  <div class="cookie-actions">
+    <button class="decline" id="cookie-decline" data-i18n="cookie_decline">Decline</button>
+    <button class="accept" id="cookie-accept" data-i18n="cookie_accept">Accept</button>
+  </div>
+</div>
+
+<script src="/assets/app.js"></script>
+<script src="/assets/app.js"></script>
+
+<script>
+  // Landing-page-specific: preselect this page's target tool once the
+  // shared engine (assets/app.js) has finished its own init(). Listener
+  // order guarantees this runs after app.js's own DOMContentLoaded
+  // handler, since app.js is loaded/parsed earlier in the document.
+  document.addEventListener('DOMContentLoaded', () => {
+    setTime<script src="/assets/app.js"></script>
+<script>
+  // Landing-page-specific: preselect this page's target tool once the
+  // shared engine (assets/app.js) has finished its own init(). Listener
+  // order guarantees this runs after app.js's own DOMContentLoaded
+  // handler, since app.js is loaded/parsed earlier in the document.
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => { if (typeof selectTool === 'function') selectTool('pdf2word'); }, 0);
+  });
+</script>
+
+</body>
+</html>
