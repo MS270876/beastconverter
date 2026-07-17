@@ -1,41 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  BeastConverter sitemap.xml — Phase 1 (scoped launch set).
-
-  Only includes real, live pages: the homepage and ONE example
-  tool+language landing page pair (PDF to Word, EN + DA). This is
-  intentional, not incomplete — see the accompanying blueprint
-  document for why a 169-page day-one sitemap is a real ranking
-  risk on a brand-new domain, not just unnecessary work.
-
-  Each <url> that has a language sibling includes xhtml:link
-  hreflang alternates pointing to every version of that same page,
-  per Google's documented sitemap hreflang format. This is the
-  correct way to declare language relationships to Google — the
-  <link rel="alternate" hreflang="..."> tags already in each page's
-  own <head> do the same job for browsers/crawlers reading the page
-  directly; the sitemap does it for Search Console's indexing view.
-
-  TO EXTEND THIS FILE when you add more tool/language pages:
-  add one <url> block per page, and make sure EVERY page in a
-  language-sibling group lists the SAME set of xhtml:link entries
-  (including itself) — Google requires this to be reciprocal and
-  consistent across all versions or it will ignore the hreflang
-  signal entirely.
--->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
-  <!-- Homepage — no hreflang siblings; language is handled in-app via
-       the JS switcher (see the multi-page blueprint for why the
-       homepage stays single-URL rather than being split 13 ways). -->
   <url>
     <loc>https://beastconverter.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
-  <!-- PDF to Word — English -->
   <url>
     <loc>https://beastconverter.com/pdf-to-word</loc>
     <changefreq>monthly</changefreq>
@@ -44,8 +16,6 @@
     <xhtml:link rel="alternate" hreflang="da" href="https://beastconverter.com/da/pdf-til-word"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://beastconverter.com/pdf-to-word"/>
   </url>
-
-  <!-- PDF to Word — Danish -->
   <url>
     <loc>https://beastconverter.com/da/pdf-til-word</loc>
     <changefreq>monthly</changefreq>
@@ -55,7 +25,40 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://beastconverter.com/pdf-to-word"/>
   </url>
 
-  <!-- Legal pages — low priority, but should still be indexed -->
+  <url>
+    <loc>https://beastconverter.com/compress-pdf</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://beastconverter.com/compress-pdf"/>
+    <xhtml:link rel="alternate" hreflang="da" href="https://beastconverter.com/da/komprimer-pdf"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://beastconverter.com/compress-pdf"/>
+  </url>
+  <url>
+    <loc>https://beastconverter.com/da/komprimer-pdf</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://beastconverter.com/compress-pdf"/>
+    <xhtml:link rel="alternate" hreflang="da" href="https://beastconverter.com/da/komprimer-pdf"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://beastconverter.com/compress-pdf"/>
+  </url>
+
+  <url>
+    <loc>https://beastconverter.com/heic-to-jpg</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://beastconverter.com/heic-to-jpg"/>
+    <xhtml:link rel="alternate" hreflang="da" href="https://beastconverter.com/da/heic-til-jpg"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://beastconverter.com/heic-to-jpg"/>
+  </url>
+  <url>
+    <loc>https://beastconverter.com/da/heic-til-jpg</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://beastconverter.com/heic-to-jpg"/>
+    <xhtml:link rel="alternate" hreflang="da" href="https://beastconverter.com/da/heic-til-jpg"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://beastconverter.com/heic-to-jpg"/>
+  </url>
+
   <url>
     <loc>https://beastconverter.com/privacy.html</loc>
     <changefreq>yearly</changefreq>
