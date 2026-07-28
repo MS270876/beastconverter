@@ -303,6 +303,12 @@
 
     </div>
 
+       <div class="footer-col">
+          <h5>Andre værktøjer</h5>
+          <a href="/da/pdf-til-word">PDF til Word</a>
+          <a href="/da/komprimer-pdf">Komprimer PDF</a>
+        </div>
+       
     <!-- ============================================================
          AD SLOT — SIDEBAR (desktop only, hidden under 980px)
          ============================================================ -->
@@ -446,15 +452,13 @@
       <button type="submit" class="pw-btn stripe" style="justify-content:center;">
         <span class="btn-text"><b data-i18n="contact_send">Send message</b></span>
       </button>
-      <p id="contact-status" style="font-size:.82rem; text-align:center; min-height:1.2em;"></p>
-    </form>
-    <p style="font-size:.78rem; color:#6B7280; text-align:center; margin-top:14px;" data-i18n="contact_direct">
-      Prefer email? Write to <a href="mailto:contact@beastconverter.com" style="color:inherit; text-decoration:underline;">contact@beastconverter.com</a> directly.
-    </p>
-  </div>
-</div>
+    <script src="/assets/app.js"></script>
 
-<!-- ============================================================
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => { if (typeof selectTool === 'function') selectTool('heic2jpg'); }, 0);
+  });
+</script>
      REWARDED VIDEO MODAL
      Replaces a bare alert() with a real three-step UX shell:
      confirm → (simulated) playing → success. NOT wired to a real ad
