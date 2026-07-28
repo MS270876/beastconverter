@@ -117,12 +117,6 @@
 
 <link rel="stylesheet" href="/assets/styles.css">
 
-<!-- This is a dedicated landing page: it has its own hard-coded SEO tags
-     above (title/description/canonical/hreflang), unique to this exact
-     tool+language combination. window.BC_SKIP_SEO_META_UPDATE tells the
-     shared engine (assets/app.js) not to overwrite those tags with the
-     generic homepage copy once it initializes — see updateSEOMeta() in
-     that file for why this matters. -->
 <script>window.BC_SKIP_SEO_META_UPDATE = true;</script>
 
 </head>
@@ -130,13 +124,7 @@
 
 <div class="claw-bg" aria-hidden="true"></div>
 
-<!-- ============================================================
-     AD SLOT — TOP HORIZONTAL BANNER (Google AdSense)
-     Replace the placeholder div below with your <ins class="adsbygoogle">
-     tag once you have an approved AdSense unit.
-     ============================================================ -->
 <div class="ad-slot ad-top" id="ad-top" data-ad-slot="top-banner">
-  <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="0000000000" data-ad-format="horizontal"></ins> -->
   <span data-i18n="ad_placeholder">Advertisement — 728×90</span>
 </div>
 
@@ -161,8 +149,6 @@
 
 <main class="wrap">
 
-  <!-- ================= HERO ================= -->
-  <!-- ================= HERO ================= -->
   <section class="hero">
     <div class="eyebrow"><span class="dot"></span><span>100% local · nothing ever uploaded</span></div>
     <h1>Gratis <em>HEIC til JPG</em> Konvertering — 100% Privat</h1>
@@ -171,9 +157,6 @@
   <div class="main-layout">
     <div class="main-col">
 
-      <!-- ================= CONVERSION METER (Beast Engine readout) ================= -->
-      <!-- Sits directly above the drop zone so the free-conversion budget is
-           impossible to miss before a user commits a file. -->
       <div class="meter-panel" role="status" aria-live="polite" id="meter-panel">
         <div class="meter-panel-left">
           <div class="meter-notches" id="meter-notches">
@@ -184,17 +167,6 @@
         <span class="meter-window" id="meter-window-text" data-i18n="meter_window">resets on a rolling 15-minute window</span>
       </div>
 
-      <!-- ================= DROP ZONE ================= -->
-      <!-- ============================================================
-           DROP-CATCH AREA — wraps both the dropzone box AND the tool
-           grid below it. Drag events are handled on THIS whole wrapper
-           (see setupDropzone() in the script), not just the small
-           dropzone box, so once a tool is selected you can drop a file
-           anywhere over the tool cards too, without scrolling back up
-           to the small box specifically. The small box still gets its
-           own tighter visual highlight; the wrapper gets a lighter
-           full-area highlight so there's feedback wherever you are.
-           ============================================================ -->
       <div class="drop-catch-area" id="drop-catch-area">
 
       <section class="dropzone-region">
@@ -216,7 +188,6 @@
         </div>
       </section>
 
-      <!-- ================= TOOL GRID ================= -->
       <section class="tools-section">
         <div class="section-head">
           <span class="kicker" data-i18n="tools_kicker">Choose your weapon</span>
@@ -224,17 +195,8 @@
         </div>
 
         <div class="tool-grid" id="tool-grid">
-          <!-- Tool cards are rendered by JS from the TOOLS config so labels stay in sync with i18n -->
         </div>
 
-        <!-- ================= RESIZE OPTIONS ================= -->
-        <!-- Only Resize Image needs a parameter from the person — every
-             other tool just needs a file. Hidden by default; toggled by
-             selectTool() when 'resizeimage' is (de)selected. A single
-             width field (not width+height) is deliberate: with multiple
-             queued files of different original sizes, one target width
-             with auto-computed proportional height is far more usable
-             than asking for exact width+height per batch. -->
         <div class="resize-options" id="resize-options" style="display:none;">
           <label for="resize-width-input" data-i18n="resize_width_label">Target width</label>
           <input type="number" id="resize-width-input" value="1024" min="16" max="8000" step="1">
@@ -252,7 +214,6 @@
           <span class="resize-hint" id="resize-hint-text" data-i18n="resize_keep_ratio_hint">Uncheck to set an exact height too — this may stretch or squash images that don't match this ratio.</span>
         </div>
 
-        <!-- ================= ROTATE OPTIONS ================= -->
         <div class="resize-options" id="rotate-options" style="display:none;">
           <label for="rotate-angle-select" data-i18n="rotate_angle_label">Rotation</label>
           <select id="rotate-angle-select" class="lang-select" style="padding:8px 30px 8px 12px;">
@@ -278,7 +239,6 @@
 
       </div><!-- /#drop-catch-area -->
 
-      <!-- ================= RESULTS ================= -->
       <section class="results" id="results">
         <div class="section-head" style="margin-bottom:20px;">
           <span class="kicker" data-i18n="results_kicker">Fresh out of the den</span>
@@ -287,34 +247,14 @@
         <div id="result-list"></div>
       </section>
 
-      <!-- ============================================================
-           AD SLOT — BELOW DOWNLOAD/PAYWALL SECTION
-           High-visibility placement: shown right after a successful
-           conversion, or beneath the paywall when the limit is hit.
-           ============================================================ -->
       <div class="ad-slot ad-below-download" id="ad-below-download" data-ad-slot="below-download">
-        <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="1111111111" data-ad-format="auto"></ins> -->
         <span data-i18n="ad_placeholder">Advertisement — 728×90</span>
       </div>
 
-      <!-- Paywall is now a full-screen modal overlay (#paywall-overlay), defined
-           near the end of <body> alongside the AdBlock modal, and triggered by JS
-           the instant the free-conversion count hits zero. -->
-
     </div>
 
-       <div class="footer-col">
-          <h5>Andre værktøjer</h5>
-          <a href="/da/pdf-til-word">PDF til Word</a>
-          <a href="/da/komprimer-pdf">Komprimer PDF</a>
-        </div>
-       
-    <!-- ============================================================
-         AD SLOT — SIDEBAR (desktop only, hidden under 980px)
-         ============================================================ -->
     <aside class="sidebar-col">
       <div class="ad-slot ad-sidebar" id="ad-sidebar" data-ad-slot="sidebar">
-        <!-- <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="2222222222" data-ad-format="vertical"></ins> -->
         <span data-i18n="ad_placeholder_sidebar">Advertisement — 300×600</span>
       </div>
     </aside>
@@ -327,12 +267,18 @@
 
     <h2>Sådan konverterer du HEIC til JPG</h2>
     <ul>
-      <li>Vælg eller træk dit HEIC-billede ind i HEIC til JPG-konverteren.</li>\n      <li>Lad BeastConverter afkode og konvertere billedet lokalt i browseren.</li>\n      <li>Kontrollér den færdige JPG-konvertering.</li>\n      <li>Download JPG-filen til din enhed, så du kan redigere, uploade, udskrive eller dele den.</li>
+      <li>Vælg eller træk dit HEIC-billede ind i HEIC til JPG-konverteren.</li>
+      <li>Lad BeastConverter afkode og konvertere billedet lokalt i browseren.</li>
+      <li>Kontrollér den færdige JPG-konvertering.</li>
+      <li>Download JPG-filen til din enhed, så du kan redigere, uploade, udskrive eller dele den.</li>
     </ul>
 
     <h2>Ofte stillede spørgsmål om HEIC til JPG</h2>
     <ul>
-      <li>Forringes billedkvaliteten, når HEIC konverteres til JPG? JPG bruger komprimering med kvalitetstab, så visse billeddata kan blive fjernet under konverteringen. BeastConverter sigter mod en praktisk balance mellem visuel kvalitet og filstørrelse, men gentagen redigering og lagring som JPG kan medføre yderligere kvalitetstab.</li>\n      <li>Er det sikkert at konvertere private HEIC-billeder online? Med BeastConverter foregår konverteringen lokalt i din browser. Dine billeder uploades ikke til en cloudbaseret konverteringsserver, så personlige og følsomme fotos bliver på din egen enhed.</li>\n      <li>Hvorfor skal jeg konvertere HEIC til JPG? HEIC er effektivt, men formatet understøttes ikke ens af alle hjemmesider, programmer, enheder og arbejdsgange. JPG har bredere kompatibilitet til deling, upload, redigering, udskrivning og arkivering.</li>\n      <li>Bliver JPG-filen større end den oprindelige HEIC-fil? Det kan den blive. HEIC lagrer ofte sammenlignelig visuel kvalitet mere effektivt end JPG, så den konverterede fil kan fylde mere. Den endelige størrelse afhænger af billedets dimensioner, kompleksitet og JPG-komprimering.</li>
+      <li>Forringes billedkvaliteten, når HEIC konverteres til JPG? JPG bruger komprimering med kvalitetstab, så visse billeddata kan blive fjernet under konverteringen. BeastConverter sigter mod en praktisk balance mellem visuel kvalitet og filstørrelse, men gentagen redigering og lagring som JPG kan medføre yderligere kvalitetstab.</li>
+      <li>Er det sikkert at konvertere private HEIC-billeder online? Med BeastConverter foregår konverteringen lokalt i din browser. Dine billeder uploades ikke til en cloudbaseret konverteringsserver, så personlige og følsomme fotos bliver på din egen enhed.</li>
+      <li>Hvorfor skal jeg konvertere HEIC til JPG? HEIC er effektivt, men formatet understøttes ikke ens af alle hjemmesider, programmer, enheder og arbejdsgange. JPG har bredere kompatibilitet til deling, upload, redigering, udskrivning og arkivering.</li>
+      <li>Bliver JPG-filen større end den oprindelige HEIC-fil? Det kan den blive. HEIC lagrer ofte sammenlignelig visuel kvalitet mere effektivt end JPG, så den konverterede fil kan fylde mere. Den endelige størrelse afhænger af billedets dimensioner, kompleksitet og JPG-komprimering.</li>
     </ul>
 
   </section>
@@ -358,6 +304,11 @@
           <a href="#tool-grid" data-i18n="footer_tools_3">Spreadsheets</a>
         </div>
         <div class="footer-col">
+          <h5>Andre værktøjer</h5>
+          <a href="/da/pdf-til-word">PDF til Word</a>
+          <a href="/da/komprimer-pdf">Komprimer PDF</a>
+        </div>
+        <div class="footer-col">
           <h5 data-i18n="footer_company">Company</h5>
           <a href="/privacy.html" data-i18n="footer_privacy">Privacy policy</a>
           <a href="/terms.html" data-i18n="footer_terms">Terms of use</a>
@@ -373,11 +324,6 @@
   </div>
 </footer>
 
-<!-- ============================================================
-     PAYWALL MODAL — fires the instant the free-conversion count hits
-     zero within the 15-minute rolling window. Two escape routes:
-     a rewarded-video placeholder and a Stripe Beast Pass placeholder.
-     ============================================================ -->
 <div class="paywall-overlay" id="paywall-overlay" role="dialog" aria-modal="true" aria-labelledby="pw-title">
   <div class="paywall-card">
     <div class="pw-icon">
@@ -411,21 +357,6 @@
   </div>
 </div>
 
-<!-- ============================================================
-     CONTACT MODAL
-     IMPORTANT — this form has nowhere to send its data yet. There is
-     no backend in this project, so the <form> action below points to
-     a PLACEHOLDER endpoint. Before this goes live, do ONE of:
-       (a) Sign up for a free form-to-email service (e.g. Formspree,
-           https://formspree.io — free tier, no backend required) and
-           replace FORM_ENDPOINT_PLACEHOLDER below with the endpoint
-           they give you. This is the fastest path for a static site.
-       (b) Build a tiny serverless function (Cloudflare Worker,
-           Vercel/Netlify function) that emails you the submission,
-           and point the endpoint there instead.
-     Until one of those is wired up, submissions will fail silently
-     to the person filling out the form — don't ship this section
-     live without doing (a) or (b) first. -->
 <div class="modal-overlay" id="contact-modal">
   <div class="modal-card">
     <div class="mi" style="background:rgba(76,141,255,.12);">
@@ -452,13 +383,15 @@
       <button type="submit" class="pw-btn stripe" style="justify-content:center;">
         <span class="btn-text"><b data-i18n="contact_send">Send message</b></span>
       </button>
-    <script src="/assets/app.js"></script>
+      <p id="contact-status" style="font-size:.82rem; text-align:center; min-height:1.2em;"></p>
+    </form>
+    <p style="font-size:.78rem; color:#6B7280; text-align:center; margin-top:14px;" data-i18n="contact_direct">
+      Prefer email? Write to <a href="mailto:contact@beastconverter.com" style="color:inherit; text-decoration:underline;">contact@beastconverter.com</a> directly.
+    </p>
+  </div>
+</div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => { if (typeof selectTool === 'function') selectTool('heic2jpg'); }, 0);
-  });
-</script>
+<!-- ============================================================
      REWARDED VIDEO MODAL
      Replaces a bare alert() with a real three-step UX shell:
      confirm → (simulated) playing → success. NOT wired to a real ad
@@ -503,7 +436,6 @@
   </div>
 </div>
 
-<!-- ================= ADBLOCK SOFT-WALL MODAL ================= -->
 <div class="modal-overlay" id="adblock-modal">
   <div class="modal-card">
     <div class="mi">
@@ -519,29 +451,6 @@
   </div>
 </div>
 
-<!-- ================= COOKIE CONSENT BANNER ================= -->
-<!-- IMPORTANT — READ BEFORE ENABLING ADSENSE FOR EEA/UK/SWISS TRAFFIC:
-     This is a simple, self-built accept/decline banner. It is NOT a TCF-
-     certified Consent Management Platform (CMP), and it will NOT satisfy
-     Google's EU User Consent Policy requirement for serving *personalized*
-     AdSense ads to users in the EEA, UK, or Switzerland (mandatory as of
-     16 Jan 2024 / 31 Jul 2024, moving to TCF v2.3 by 28 Feb 2026).
-
-     Before turning on personalized ads for that traffic, do ONE of:
-       (a) Recommended for launch — in the AdSense dashboard, go to
-           "Privacy & messaging" and enable Google's own European
-           regulations message. It's Google-certified and TCF-integrated
-           out of the box; no code changes needed here. You can also
-           choose "non-personalised ads only" for EEA/UK/CH traffic from
-           that same settings page, which sidesteps the CMP requirement
-           entirely (at some cost to ad revenue from that traffic).
-       (b) Replace this banner with a script tag from a third-party
-           Google-certified CMP (e.g. CookieYes, Cookiebot, Osano) that
-           supports TCF v2.3.
-     Outside the EEA/UK/Switzerland, Google does not mandate a TCF CMP,
-     so this simple banner remains a reasonable general-purpose notice
-     for the rest of the world (and can stay as a basic disclosure even
-     alongside option (a) or (b) above). -->
 <div class="cookie-banner" id="cookie-banner">
   <p data-i18n="cookie_text">We use cookies for ads and basic analytics. No file data is ever collected — conversions happen entirely on your device.</p>
   <div class="cookie-actions">
@@ -551,20 +460,8 @@
 </div>
 
 <script src="/assets/app.js"></script>
-<script src="/assets/app.js"></script>
 
 <script>
-  // Landing-page-specific: preselect this page's target tool once the
-  // shared engine (assets/app.js) has finished its own init(). Listener
-  // order guarantees this runs after app.js's own DOMContentLoaded
-  // handler, since app.js is loaded/parsed earlier in the document.
-  document.addEventListener('DOMContentLoaded', () => {
-    setTime<script src="/assets/app.js"></script>
-<script>
-  // Landing-page-specific: preselect this page's target tool once the
-  // shared engine (assets/app.js) has finished its own init(). Listener
-  // order guarantees this runs after app.js's own DOMContentLoaded
-  // handler, since app.js is loaded/parsed earlier in the document.
   document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { if (typeof selectTool === 'function') selectTool('heic2jpg'); }, 0);
   });
